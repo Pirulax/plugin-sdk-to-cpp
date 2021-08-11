@@ -1,8 +1,4 @@
-import jinja2 as j2
-from typing import List
-from dataclasses import dataclass
-from typing import List
-from CSVFunctionExtract import *
+from pathlib import Path
 from argparse import ArgumentParser
 
 parser = ArgumentParser(description='IDA .h and .cpp wrapper file generator.')
@@ -24,9 +20,11 @@ args = parser.parse_args()
 class_name = args.iclass
 
 args.o.mkdir(parents=True, exist_ok=True) # Make sure dir exists
+
+import jinja2 as j2
 import CSVFunctionExtract
+from CSVFunctionExtract import FunctionType
 import CSVStaticVariableExtract
-from CSVFunctionExtract import Function, FunctionType
 import JSONStructExtract
 
 j2env = j2.Environment(
