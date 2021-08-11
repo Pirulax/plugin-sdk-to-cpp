@@ -1,0 +1,70 @@
+#include "StdInc.h"
+#include "{{ class_name }}.h"
+
+{# Macros #}
+{%- macro function_def(fn, name, ret_type=fn.ret_type) -%}
+// {{ fn.address }}
+{% if ret_type %}{{ ret_type }} {% endif %}{{ class_name }}::{{ name }}({{ fn.param_name_types }}) {
+    {% if caller -%}
+        {{- caller() -}}
+    {%- endif -%}
+}
+{% endmacro -%}
+
+{% macro function_def_empty_body(fn, name) -%}
+    {%- call function_def(fn, fn.name) -%}{%- endcall -%}
+{%- endmacro -%}
+
+{%- macro function_def_plugin(fn, name) -%}
+    {%- call function_def(fn, name) %}
+    {{ fn.plugin_call_src | indent(4) }};
+    {% endcall -%}
+{%- endmacro -%}
+
+{% for v in static_vars -%}
+    {% if v.array_subscript -%} {# Array type #}
+        {{ v.no_extent_type }} (&{{ v.full_name }}){{ v.array_subscript }} = *({{ v.no_extent_type }}(*){{ v.array_subscript }}){{ v.address }};
+    {% else -%} {# Non-array type #}
+        {{ v.no_extent_type }}& {{ v.full_name }} = *({{ v.no_extent_type }}*){{ v.address }};
+    {% endif -%}
+{% endfor %}
+
+void {{ class_name }}::InjectHooks() {
+{% for fn in ctors + [dtor] + regular_fns + virtual_fns %}
+    // ReversibleHooks::Install("{{ class_name }}", "{{ fn.name }}", {{ fn.address }}, &{{ class_name }}::{{ fn.name if not fn.is_virtual else fn.name + "_Reversed"}}); {{ '\n' }}
+{%- endfor %}
+}
+
+{# Constructors #}
+{% for fn in ctors -%}
+    {{ function_def(fn, class_name, none) }}
+    {% call function_def(fn, 'Constructor', class_name + '*') %}
+    this->{{ class_name }}::{{ class_name }}({{ fn.param_names }});
+    return this;
+    {% endcall %}
+{% endfor %}
+
+{# Destructor if any #}
+{% if dtor %}
+    {{- function_def(dtor, '~' + class_name, none) }}
+    {% call function_def(dtor, 'Destructor', class_name + '*') %}
+    this->{{ class_name }}::~{{ class_name }}({{ dtor.param_names }});
+    return this;
+    {% endcall %}
+{% endif %}
+
+{# Regular functions #}
+{%- for fn in regular_fns %}
+    {{- function_def_plugin(fn, fn.name) }}
+{% endfor %}
+
+{# Virtual functions with their wrappers #}
+{%- for fn in virtual_fns -%}
+    {# Function body for wrapped virtual function #}
+    {% call function_def(fn, fn.name) -%}
+        {{ fn.name }}_Reversed({{ fn.param_names }}); 
+    {%- endcall %}
+
+    {# _Reversed wrapper for above virtual function #}
+    {{- function_def_plugin(fn, fn.name + "_Reversed") }}
+{% endfor %}
