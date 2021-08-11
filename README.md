@@ -6,7 +6,7 @@ This tool converts the output of [Plugin SDK](https://github.com/DK22Pac/plugin-
 Navigate into the downloaded repo, and launch `install.bat`
 
 ## How to use
-1. Copy everything from the `plugin/` into your IDA installation
+1. Copy the `plugins/` **folder** into your IDA installation
 2. Open the gta IDB, go into text view, click there.
 3. Go to Edit -> Plugins -> Export to Plugin-SDK
 4. Select the path where the database should be saved
