@@ -17,3 +17,8 @@ Navigate into the downloaded repo, and launch `install.bat`
 
 #### Program arguments
 Type the following into the console: `py main.py -h`
+
+## Special thanks to:
+- [Izzotop](https://github.com/Izzotop) for inspiring me to use Jinja2
+- [Codenulls](https://github.com/codenulls) for the modified plugins, and similar program (from which I took the inspiration)
+- All [Plugin SDK](https://github.com/DK22Pac/plugin-sdk) contributors for their hard work
