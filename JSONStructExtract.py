@@ -5,7 +5,8 @@ from Variable import Variable
 def Extract(className, db : Path):
     file = db / "structs" / f"gtaout.{className}.json"
     if not file.exists():
-        return {}
+        # Static class
+        return {'class_size': '0x0'} 
     with file.open(mode='r', encoding='UTF-8') as f:
         j = json.loads(f.read())
         return {

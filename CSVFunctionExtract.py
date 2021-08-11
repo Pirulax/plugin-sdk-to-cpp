@@ -129,6 +129,9 @@ def PluginSDKCall(fn : Function):
 
 # Returns a tuple of (Non-Virtual, and Virtual[Sorted by vmt index]) functions belonging to this class
 def Extract(className : str, database : Path, argTypesFromDemangled : bool):
+    csv_path = database / "plugin-sdk.out.functions.csv"
+    if not csv_path.exists():
+        raise FileNotFoundError("plugin-sdk.out.functions.csv not present. Try re-running IDA plugin-sdk exporter.")
     # Cols used and their respective type
     cols = {
         '10us': str,
@@ -147,7 +150,7 @@ def Extract(className : str, database : Path, argTypesFromDemangled : bool):
         'VTIndex': np.int16,
         #'ForceOverloaded': bool
     }
-    csv_df = read_csv(database / "plugin-sdk.out.functions.csv", dtype=cols, usecols=cols.keys(), engine='c', sep=',', na_values=[], keep_default_na=False)
+    csv_df = read_csv(csv_path, dtype=cols, usecols=cols.keys(), engine='c', sep=',', na_values=[], keep_default_na=False)
     csv_df = csv_df[csv_df['DemangledName'].str.startswith(className)] # Only class members
     csv_df.sort_values(inplace=True, by='VTIndex')
     csv_df.reset_index(inplace=True)

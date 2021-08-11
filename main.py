@@ -21,6 +21,9 @@ class_name = args.iclass
 
 args.o.mkdir(parents=True, exist_ok=True) # Make sure dir exists
 
+if not args.i.exists():
+    raise NotADirectoryError("Plugin SDK export path invalid (-i). Run the IDA plugin-sdk exporter plugin. (IDA: Edit -> Plugins)")
+
 import jinja2 as j2
 import CSVFunctionExtract
 from CSVFunctionExtract import FunctionType
