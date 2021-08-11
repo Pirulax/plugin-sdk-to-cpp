@@ -12,14 +12,14 @@ parser.add_argument('-o', metavar='path', type=Path, default='output/',
                     help='Output folder path.')
 parser.add_argument('-iclass', required=True, metavar='name', type=str,
                     help='The class name in the IDB.')
-parser.add_argument('--rcalls', action='store_true', 
-                    help='Adds <className>_Reversed wrappers for virtual functions.')
+""" parser.add_argument('--rcalls', action='store_true', 
+                    help='Adds <className>_Reversed wrappers for virtual functions.') """
 parser.add_argument('--pdtypes', action='store_true', 
                     help='Function parameter types will be extracted from the demangled name rather than the function prototype.')
-parser.add_argument('--norwv3d', action='store_true', default=False,
+""" parser.add_argument('--norwv3d', action='store_true', default=False,
                     help='Convert RwV3d to CVector, and RwV3d to const CVector&')
 parser.add_argument('--noptrvector', action='store_true', default=False,
-                    help='Convert CVector* to const CVector&')
+                    help='Convert CVector* to const CVector&') """
 args = parser.parse_args()
 class_name = args.iclass
 
