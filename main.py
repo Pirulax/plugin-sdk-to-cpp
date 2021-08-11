@@ -38,11 +38,13 @@ j2env = j2.Environment(
     keep_trailing_newline=True
 )
 
-j2env.globals |= JSONStructExtract.Extract(class_name, args.i) | CSVFunctionExtract.Extract(class_name, args.i, args.pdtypes) | {
+j2env.globals.update(JSONStructExtract.Extract(class_name, args.i))
+j2env.globals.update(CSVFunctionExtract.Extract(class_name, args.i, args.pdtypes))
+j2env.globals.update({
     'FunctionType': FunctionType,
     'static_vars': CSVStaticVariableExtract.Extract(class_name, args.i),
     'class_name': class_name
-} 
+})
 
 def render_and_write_template(type : str):
     with (args.o / f'{class_name}.{type}').open('w', encoding='UTF-8') as f:
