@@ -8,24 +8,21 @@
 {%- endif -%}
 {%- endmacro -%}
 
-{% macro var_decl(v) %}
-{%- if v.array_subscript -%} {# Array type #}
-{{ v.no_extent_type }} (&{{ v.stripped_name }}){{ v.array_subscript }};
-{%- else -%} {# Non-array type #}
-{{ v.no_extent_type }}& {{ v.stripped_name }};
-{%- endif -%}
-{% endmacro %}
-
 class {{ class_name }} {
 {{ print_if("public:\n", static_vars) -}}
-{% for v in static_vars %}
-    static {{ var_decl(v) }}
-{% endfor -%}
+{%- for v in static_vars %}
+{%- if v.array_subscript -%} {# Array type #}
+    static {{ v.no_extent_type }} (&{{ v.stripped_name }}){{ v.array_subscript }};
+{% else -%} {# Non-array type #}
+    static {{ v.no_extent_type }}& {{ v.stripped_name }};
+{% endif -%}
+{%- endfor -%}
 {{- print_if("\npublic:\n", member_vars) -}}
-{% for v in member_vars %}
-    {{ var_decl(v) }}
+{%- for v in member_vars %}
+    {{ v.no_extent_type }} {{ v.stripped_name }}{{ v.array_subscript }} = {};
 {% endfor -%}
-{% for fn in ctors %}
+{{- print_if("public:\n", member_vars) -}}
+{%- for fn in ctors %}
     {{ fn_decl(fn, class_name, none) }};
 {% endfor -%}
 {{ print_if("private:", dtor or ctors) }}
