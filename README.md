@@ -1,7 +1,7 @@
-### So what's this?
+## So what's this?
 This tool converts the output of [Plugin SDK](https://github.com/DK22Pac/plugin-sdk) into, readable C++ code
 
-### How to install
+## How to install
 - Python >= 3.6 is required.
 Navigate into the downloaded repo, and launch `install.bat`
 
