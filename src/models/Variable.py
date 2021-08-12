@@ -15,7 +15,7 @@ def remove_all_extents(t):
 
 @dataclass
 class Variable:
-    address: str                 # Address in hex format. Like 0xBADBEEF
+    address: str                 # Address/Offset in hex format. Like 0xBADBEEF
     type: str                    # Full extent type, like int[10], int, int*, etc..
     full_name: str               # Name with class, eg.: CTimer::m_sTime
     stripped_name: str = None    # Name without class. Eg.: m_sTime

@@ -5,6 +5,7 @@ import numpy as np
 from pandas import read_csv
 
 from models.Variable import Variable
+from type_replacement import normalize_type
 
 strip_name_re = re.compile(r'::(\w+)')
 
@@ -38,7 +39,7 @@ def extract(class_name: str, database: Path):
             address=s[0],
             stripped_name=strip_name(s[2]),
             full_name=s[2],
-            type=s[1]
+            type=normalize_type(s[1])
         ),
         axis=1,
         result_type='reduce'

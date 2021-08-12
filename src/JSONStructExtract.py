@@ -2,6 +2,7 @@ import json
 from pathlib import Path
 
 from models.Variable import Variable
+from type_replacement import normalize_type
 
 
 def extract(class_name, db: Path):
@@ -11,8 +12,16 @@ def extract(class_name, db: Path):
         return {'class_size': '0x0'}
 
     with file_path.open(mode='r', encoding='UTF-8') as file:
-        j = json.loads(file.read())
+        data = json.loads(file.read())
+        members = [
+            Variable(
+                address=member['offset'],
+                full_name=member['name'],
+                type=normalize_type(member['type'])
+            )
+            for member in data['members']
+        ]
         return {
-            'member_vars': [Variable(address=m['offset'], full_name=m['name'], type=m['type']) for m in j['members']],
-            'class_size': j['size']
+            'member_vars': members,
+            'class_size': data['size']
         }

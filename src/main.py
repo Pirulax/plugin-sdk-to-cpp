@@ -84,24 +84,24 @@ def render_and_write_template(class_name, template_name: str, file: str, **kwarg
         file.write(data)
 
 
-def process_one(klass: str, database: str, pdtypes):
-    functions = CSVFunctionExtract.extract(klass, database, pdtypes)
-    static_vars = CSVStaticVariableExtract.extract(klass, database)
-    json_struct = JSONStructExtract.extract(klass, database)
+def process_one(class_name: str, database: str, pdtypes):
+    functions = CSVFunctionExtract.extract(class_name, database, pdtypes)
+    static_vars = CSVStaticVariableExtract.extract(class_name, database)
+    class_info = JSONStructExtract.extract(class_name, database)
 
     def _render_and_write_template(template_name: str, file_name: str):
         render_and_write_template(
-            klass,
+            class_name,
             template_name,
             file_name,
             **functions,
             static_vars=static_vars,
             FunctionType=FunctionType,
-            **json_struct
+            **class_info
         )
 
-    _render_and_write_template('source.jinja2', f'{klass}.cpp')
-    _render_and_write_template('header.jinja2', f'{klass}.h')
+    _render_and_write_template('source.jinja2', f'{class_name}.cpp')
+    _render_and_write_template('header.jinja2', f'{class_name}.h')
 
 
 def run():
