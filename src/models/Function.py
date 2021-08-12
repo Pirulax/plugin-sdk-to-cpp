@@ -88,4 +88,4 @@ class Function:
 
     @property
     def is_virtual(self):
-        return self.type == FunctionType.VIRTUAL or self.type == FunctionType.DTOR_VIRTUAL
+        return self.type in (FunctionType.VIRTUAL, FunctionType.DTOR_VIRTUAL)
