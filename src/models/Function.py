@@ -66,11 +66,26 @@ class Function:
 
         # print(self.param_name_types)
 
-        if f'{self.cls}::{self.cls}' in self.full_name: # constructor
+        if f'{self.cls}::{self.cls}' in self.full_name:  # constructor
             self.type = FunctionType.CTOR
             self.ret_type = self.cls + '*'
-        elif f'{self.cls}::~{self.cls}' in self.full_name: # destructor
+        elif f'{self.cls}::~{self.cls}' in self.full_name:  # destructor
             self.type = FunctionType.DTOR if self.vt_index == -1 else FunctionType.DTOR_VIRTUAL
             self.ret_type = self.cls + '*'
         else:
             self.type = FunctionType.REGULAR if self.vt_index == -1 else FunctionType.VIRTUAL
+
+    @property
+    def _param_names(self):
+        return [
+            param
+            for _, param in self.args
+        ]
+
+    @property
+    def param_names(self):
+        return ', '.join(self._param_names)
+
+    @property
+    def is_virtual(self):
+        return self.type == FunctionType.VIRTUAL or self.type == FunctionType.DTOR_VIRTUAL
