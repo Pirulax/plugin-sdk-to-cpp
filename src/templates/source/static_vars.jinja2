@@ -1,0 +1,7 @@
+{% for v in static_vars -%}
+    {% if v.array_subscript -%} {# Array type #}
+        {{- v.no_extent_type }} (&{{ v.full_name }}){{ v.array_subscript }} = *({{ v.no_extent_type }}(*){{ v.array_subscript }}){{ v.address }};
+    {% else -%} {# Non-array type #}
+        {{- v.no_extent_type }}& {{ v.full_name }} = *({{ v.no_extent_type }}*){{ v.address }};
+    {% endif -%}
+{% endfor %}

@@ -21,36 +21,18 @@
     {% endcall -%}
 {%- endmacro -%}
 
-{% for v in static_vars -%}
-    {% if v.array_subscript -%} {# Array type #}
-        {{ v.no_extent_type }} (&{{ v.full_name }}){{ v.array_subscript }} = *({{ v.no_extent_type }}(*){{ v.array_subscript }}){{ v.address }};
-    {% else -%} {# Non-array type #}
-        {{ v.no_extent_type }}& {{ v.full_name }} = *({{ v.no_extent_type }}*){{ v.address }};
-    {% endif -%}
-{% endfor %}
+{% include "source/static_vars.jinja2" %}
 
-void {{ class_name }}::InjectHooks() {
-{% for fn in ctors + [dtor] + regular_fns + virtual_fns %}
-    // ReversibleHooks::Install("{{ class_name }}", "{{ fn.name }}", {{ fn.address }}, &{{ class_name }}::{{ fn.name if not fn.is_virtual else fn.name + "_Reversed"}}); {{ '\n' }}
-{%- endfor %}
-}
+{% include "source/inject_hooks.jinja2" %}
 
 {# Constructors #}
 {% for fn in ctors -%}
-    {{ function_def(fn, class_name, none) }}
-    {% call function_def(fn, 'Constructor', class_name + '*') %}
-    this->{{ class_name }}::{{ class_name }}({{ fn.param_names }});
-    return this;
-    {% endcall %}
+    {% include "source/constructror.jinja2" %}
 {% endfor %}
 
 {# Destructor if any #}
 {% if dtor %}
-    {{- function_def(dtor, '~' + class_name, none) }}
-    {% call function_def(dtor, 'Destructor', class_name + '*') %}
-    this->{{ class_name }}::~{{ class_name }}({{ dtor.param_names }});
-    return this;
-    {% endcall %}
+    {% include "source/destructror.jinja2" %}
 {% endif %}
 
 {# Regular functions #}

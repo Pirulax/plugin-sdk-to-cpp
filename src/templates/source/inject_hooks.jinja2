@@ -1,0 +1,5 @@
+void {{ class_name }}::InjectHooks() {
+{% for fn in ctors + [dtor] + regular_fns + virtual_fns %}
+    // ReversibleHooks::Install("{{ class_name }}", "{{ fn.name }}", {{ fn.address }}, &{{ class_name }}::{{ fn.name if not fn.is_virtual else fn.name + "_Reversed"}}); {{ '\n' }}
+{%- endfor %}
+}
