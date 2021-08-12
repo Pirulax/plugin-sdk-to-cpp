@@ -13,10 +13,10 @@ Navigate into the downloaded repo, and launch `install.bat`
 5. Copy this pat, as you will need it for the program
 6. Open a command line interface (Powershell, Terminal, cmd.exe, etc.) (Double-clicking on the program will **not** work)
 8. Type the following into the (obviously replace the stuff between `<>`)
-`py main.py --db-path <Path to the database> --class-name <Class you want the code for> --pdtypes`
+`py src/main.py --db-path <Path to the database> --class-name <Class you want the code for> --pdtypes`
 
 #### Program arguments
-Type the following into the console: `py main.py -h`
+Type the following into the console: `py src/main.py -h`
 
 ## Special thanks to:
 - [Izzotop](https://github.com/Izzotop) for inspiring me to use Jinja2
