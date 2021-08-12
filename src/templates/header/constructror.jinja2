@@ -1,0 +1,3 @@
+{% for fn in ctors %}
+    {{ fn_decl(fn, "Constructor", class_name + '*') }};
+{% endfor -%}

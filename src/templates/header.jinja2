@@ -9,31 +9,19 @@
 {%- endmacro -%}
 
 class {{ class_name }} {
-{{ print_if("public:\n", static_vars) -}}
-{%- for v in static_vars %}
-{%- if v.array_subscript -%} {# Array type #}
-    static {{ v.no_extent_type }} (&{{ v.stripped_name }}){{ v.array_subscript }};
-{% else -%} {# Non-array type #}
-    static {{ v.no_extent_type }}& {{ v.stripped_name }};
-{% endif -%}
-{%- endfor -%}
-{{- print_if("\npublic:\n", member_vars) -}}
-{%- for v in member_vars %}
-    {{ v.no_extent_type }} {{ v.stripped_name }}{% if v.array_subscript  %}{{ v.array_subscript }}{% endif %} = {};
-{% endfor -%}
-{{- print_if("public:\n", member_vars) -}}
-{%- for fn in ctors %}
-    {{ fn_decl(fn, class_name, none) }};
-{% endfor -%}
-{{ print_if("private:", dtor or ctors) }}
-{% if dtor %}
-    {{ fn_decl(dtor, "Destructor", class_name + '*') }};
-{% endif -%}
-{% for fn in ctors %}
-    {{ fn_decl(fn, "Constructor", class_name + '*') }};
-{% endfor -%}
+{% include 'header/static_vars.jinja2' %}
+{% include 'header/member_vars.jinja2' %}
+
 public:
     static void InjectHooks();
+
+{% for fn in ctors %}
+    {{ fn_decl(fn, class_name, none) }};
+{% endfor %}
+
+{% for fn in virtual_fns %}
+    {{ fn_decl(fn, fn.name) }} override;
+{% endfor -%}
 
 {% for fn in regular_fns %}
     {% if fn.is_static %}
@@ -43,14 +31,16 @@ public:
     {% endif %}
 {% endfor -%}
 
-{% for fn in virtual_fns %}
-    {{ fn_decl(fn, fn.name) }} override;
-{% endfor -%}
+{{ print_if("private:", dtor or ctors) }}
+    friend void InjectHooksMain();
+    static void InjectHooks();
 
-{% if virtual_fns %}{{ '\n' }}private:{{ '\n' }}{% endif %}
+{% include 'header/constructror.jinja2' %}
+{% include 'header/destructror.jinja2' %}
+
 {% for fn in virtual_fns %}
-    {{ fn_decl(fn, fn.name + '_Reversed') }};{{ '\n' }}
-{%- endfor %}
+    {{ fn_decl(fn, fn.name + '_Reversed') }};
+{% endfor %}
 };
 
 VALIDATE_SIZE({{ class_name }}, {{ class_size }});
