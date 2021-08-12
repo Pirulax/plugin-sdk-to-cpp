@@ -1,0 +1,46 @@
+{% macro fn_decl(fn, name, ret_type=fn.ret_type) %}
+{% if ret_type %}{{ ret_type }} {% endif %}{{ name }}({{ fn.param_name_types }})
+{%- endmacro -%}
+
+{%- macro print_if(encaps, cond) -%}
+{%- if cond -%}
+{{ encaps }}
+{%- endif -%}
+{%- endmacro -%}
+
+class {{ class_name }} {
+{% include 'header/static_vars.jinja2' %}
+{% include 'header/member_vars.jinja2' %}
+
+public:
+    static void InjectHooks();
+
+{% for fn in ctors %}
+    {{ fn_decl(fn, class_name, none) }};
+{% endfor %}
+
+{% for fn in virtual_fns %}
+    {{ fn_decl(fn, fn.name) }} override;
+{% endfor -%}
+
+{% for fn in regular_fns %}
+    {% if fn.is_static %}
+    static {{ fn_decl(fn, fn.name) }};
+    {% else %}
+    {{ fn_decl(fn, fn.name) }};
+    {% endif %}
+{% endfor -%}
+
+{{ print_if("private:", dtor or ctors) }}
+    friend void InjectHooksMain();
+    static void InjectHooks();
+
+{% include 'header/constructror.jinja2' %}
+{% include 'header/destructror.jinja2' %}
+
+{% for fn in virtual_fns %}
+    {{ fn_decl(fn, fn.name + '_Reversed') }};
+{% endfor %}
+};
+
+VALIDATE_SIZE({{ class_name }}, {{ class_size }});
