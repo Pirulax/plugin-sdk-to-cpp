@@ -47,9 +47,10 @@ public:
     {{ fn_decl(fn, fn.name) }} override;
 {% endfor -%}
 
-{% if virtual_fns %}private:{% endif %}
+{% if virtual_fns %}{{ '\n' }}private:{{ '\n' }}{% endif %}
 {% for fn in virtual_fns %}
-    {{ fn_decl(fn, fn.name + '_Reversed') }};
+    {{ fn_decl(fn, fn.name + '_Reversed') }};{{ '\n' }}
 {%- endfor %}
 };
+
 VALIDATE_SIZE({{ class_name }}, {{ class_size }});
