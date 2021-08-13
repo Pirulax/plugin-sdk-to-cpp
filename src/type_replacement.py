@@ -20,7 +20,7 @@ type_replacements = [
     (r'\bstruct\b', ''),
     (r'\b_BOOL1\b', 'bool'),
     (r'\buchar\b', 'uint8_t'),
-    (r'\s+\*?', '*')  # Fix space between type and * for pointers (Eg.: Foo * => Foo*)
+    (r'\s+(?=\*)', '')  # Fix space between type and * for pointers (Eg.: Foo * => Foo*)
 ]
 type_replacements = [(re.compile(regex), repl) for regex, repl in type_replacements]  # Compile all regexes
 
