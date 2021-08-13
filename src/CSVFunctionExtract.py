@@ -11,7 +11,7 @@ from type_replacement import normalize_type
 name_re = re.compile(r'::(~?\w+)\(*?')
 
 
-def extract_function_from_demangled_name(demangled_name : str):
+def extract_name_from_demangled(demangled_name : str):
     name = demangled_name.replace('__', '::')
     return name_re.search(name).group(1)
 
@@ -84,16 +84,23 @@ def extract(class_name: str, database: Path, arg_types_from_demangled: bool):
     csv_df.sort_values(inplace=True, by='VTIndex')
     csv_df.reset_index(inplace=True)
 
+    csv_df['StrippedName'] = csv_df['DemangledName'].apply(lambda dn: extract_name_from_demangled(dn))
+    csv_df['IsOverloaded'] = csv_df['StrippedName'].duplicated(keep=False)
+
+    #all_functions = set()
+    #fn_series.apply(lambda fn: all_functions.add(fn))
+
     # Create data that fits our needs, normalize types, etc..
-    fn_series = csv_df[['ParamTypes', 'ParamNames', 'CC', 'DemangledName', 'RetType', 'VTIndex', '10us']].apply(
+    fn_series = csv_df[['ParamTypes', 'ParamNames', 'CC', 'DemangledName', 'RetType', 'VTIndex', '10us', 'StrippedName', 'IsOverloaded']].apply(
         lambda s: Function(
             cls=class_name,
             full_name=s[3],
-            name=extract_function_from_demangled_name(s[3]),
+            name=s[7],
             address=s[6],
             ret_type=normalize_type(s[4]),
             vt_index=s[5],
             cc=s[2],
+            is_overloaded=s[8],
             args=[
                 (t, n)
                 for t, n in zip(extract_param_types(s[0], s[2], s[3], arg_types_from_demangled), extract_param_names(s[1], s[2]))
@@ -101,6 +108,11 @@ def extract(class_name: str, database: Path, arg_types_from_demangled: bool):
         ),
         axis=1  # Apply on each row
     )
+    # Find all duplicates and mark them as such
+    #all_functions = set()
+    #fn_series.apply(lambda fn: all_functions.add(fn))
+    #fn_series[fn_series.apply(lambda fn: fn in all_functions)].apply(lambda fn: fn.is_overloaded)
+
 
     filter_by_type = lambda ts: fn_series.loc[fn_series.apply(lambda f: f.type in ts)].tolist()
     dtor = filter_by_type([FunctionType.DTOR, FunctionType.DTOR_VIRTUAL])

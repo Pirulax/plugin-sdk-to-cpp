@@ -27,6 +27,7 @@ class Function:
     type: FunctionType = None
     plugin_call_src: str = None     # C++ source code for the plugin call stuff
     param_name_types: str = None
+    is_overloaded : bool = False
     # plugin_call_template: str      # Eg.: "bool, 0xBEEF, CFoo*, bool"
     # plugin_call_args: str          # Eg.: "this, bValue" (For the above template)
     # plugin_function: str           # Eg.: "StdCall", "Call", "CallMethodAndReturn"
@@ -64,8 +65,6 @@ class Function:
         self.plugin_call_src = self.PluginSDKCall()
         self.param_name_types = ', '.join([' '.join(a) for a in self.args])
 
-        # print(self.param_name_types)
-
         if f'{self.cls}::{self.cls}' in self.full_name:  # constructor
             self.type = FunctionType.CTOR
             self.ret_type = self.cls + '*'
@@ -76,15 +75,12 @@ class Function:
             self.type = FunctionType.REGULAR if self.vt_index == -1 else FunctionType.VIRTUAL
 
     @property
-    def _param_names(self):
-        return [
-            param
-            for _, param in self.args
-        ]
+    def param_names(self):
+        return ', '.join([n for t, n in self.args])
 
     @property
-    def param_names(self):
-        return ', '.join(self._param_names)
+    def param_types(self):
+        return ', '.join([t for t, n in self.args])
 
     @property
     def is_virtual(self):

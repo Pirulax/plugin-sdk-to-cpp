@@ -1,5 +1,6 @@
 from argparse import ArgumentParser
 from pathlib import Path
+import pathlib
 
 import jinja2 as j2
 
@@ -60,6 +61,14 @@ parser.add_argument(
     help='Indentation for the code. By default 4 spaces'
 )
 args = parser.parse_args()
+
+import os
+
+# The program is meant to be run from the root dir (eg.: Where LICENSE is)
+# but the working directory should actually be where this file is
+# so change it
+if Path.cwd().name != 'src':
+    os.chdir('src/')
 
 args.output.mkdir(parents=True, exist_ok=True)  # Make sure dir exists
 if not args.db_path.exists():

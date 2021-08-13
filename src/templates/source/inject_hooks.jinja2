@@ -1,5 +1,21 @@
+{%- macro raw_address_of(fn) -%}
+    &{{ class_name }}::{{ fn.name + "_Reversed" if fn.is_virtual else fn.name}}
+{%- endmacro -%}
+
+{%- macro overloaded_address_of(fn) -%}
+    static_cast<{{fn.ret_type}}({{ '*' if fn.is_static else class_name + '::'  }}*)({{ fn.param_types }})>({{ raw_address_of(fn) }})
+{%- endmacro -%}
+
+{%- macro address_of(fn) -%}
+    {%- if fn.is_overloaded -%}
+        {{ overloaded_address_of(fn) }}
+    {%- else -%}
+        {{ raw_address_of(fn) }}
+    {%- endif -%}
+{%- endmacro -%}
+
 void {{ class_name }}::InjectHooks() {
 {% for fn in ctors + [dtor] + regular_fns + virtual_fns %}
-    // ReversibleHooks::Install("{{ class_name }}", "{{ fn.name }}", {{ fn.address }}, &{{ class_name }}::{{ fn.name if not fn.is_virtual else fn.name + "_Reversed"}}); {{ '\n' }}
-{%- endfor %}
+    // ReversibleHooks::Install("{{ class_name }}", "{{ fn.name }}", {{ fn.address }}, {{ address_of(fn) }});
+{% endfor %}
 }
