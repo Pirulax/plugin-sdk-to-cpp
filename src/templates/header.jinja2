@@ -15,7 +15,11 @@ class {{ class_name }} {
 public:
     static void InjectHooks();
 
-{% for fn in ctors %}
+{% if dtor %}
+    {{ fn_decl(dtor, '~' + class_name, none) }};
+{% endif -%}
+
+{%- for fn in ctors %}
     {{ fn_decl(fn, class_name, none) }};
 {% endfor %}
 
