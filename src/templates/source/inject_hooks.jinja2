@@ -1,5 +1,14 @@
+{# Returns the name of the function we should take the address of #}
 {%- macro raw_address_of(fn) -%}
-    &{{ class_name }}::{{ fn.name + "_Reversed" if fn.is_virtual else fn.name}}
+    {%- if fn.is_ctor -%}
+        &{{ class_name }}::Constructor
+    {%- elif fn.is_dtor -%}
+        &{{ class_name }}::Destructor
+    {%- elif fn.is_virtual -%}
+        &{{ class_name }}::{{ fn.name }}_Reversed
+    {%- else -%}
+        &{{ class_name }}::{{ fn.name }}
+    {%- endif -%}
 {%- endmacro -%}
 
 {%- macro overloaded_address_of(fn) -%}
