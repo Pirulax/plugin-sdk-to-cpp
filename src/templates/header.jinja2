@@ -42,5 +42,6 @@ public:
     {{ fn_decl(fn, fn.name + '_Reversed') }};
 {% endfor %}
 };
-
+{%- if class_size and class_size != '0x0' -%}
 VALIDATE_SIZE({{ class_name }}, {{ class_size }});
+{%- endif -%}
