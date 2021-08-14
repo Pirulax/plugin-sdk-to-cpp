@@ -17,6 +17,10 @@ def extract_name_from_demangled(demangled_name : str):
     name = demangled_name.replace('__', '::')
     return name_re.search(name).group(1)
 
+# https://stackoverflow.com/questions/363944
+def first_of_list_or(list, default_value):
+    return next(iter(list), default_value)
+
 #  Returns a tuple of (Non-Virtual, and Virtual[Sorted by vmt index]) functions belonging to this class
 def extract(class_name: str):
     csv_path = DATABASE_PATH / 'plugin-sdk.out.functions.csv'
@@ -43,7 +47,7 @@ def extract(class_name: str):
     }
 
     csv_df = read_csv(csv_path, dtype={k: v[0] for k, v in cols.items()}, usecols=cols.keys(), engine='c', sep=',', na_values=[], keep_default_na=False)
-    csv_df.rename(columns={k: v[1] for k, v in cols.items()}, inplace=True)
+    csv_df.rename(columns={k: v[1] for k, v in cols.items()}, inplace=True) # Rename columns in order for Function constructor to work
     csv_df = csv_df[csv_df['demangled_name'].str.startswith(class_name)]  # Filter to only contain class members
 
     # Add these 2 columns
@@ -63,12 +67,14 @@ def extract(class_name: str):
     
     # TODO Maybe do some checks here (Eg.: Check for duplicate destructors)
 
-    # Finally return them by type
-    filter_by_type = lambda ts: fns.loc[fns.apply(lambda f: f.type in ts)].tolist()
-    dtor = filter_by_type([FunctionType.DTOR, FunctionType.DTOR_VIRTUAL])
+    # Get all functions by type as a py list
+    get_all_by_type = lambda ts: fns[fns.apply(lambda f: f.type in ts)].tolist()
+
     return {
-        'ctors': filter_by_type([FunctionType.CTOR]),
-        'dtor': dtor[0] if dtor else None,  # There can be only one destructor, so this has to be a single item, not a list
-        'virtual_fns': filter_by_type([FunctionType.VIRTUAL]),
-        'regular_fns': filter_by_type([FunctionType.REGULAR]),
+        # There can be only one destructor, so this has to be a single item, not a list
+        'dtor': first_of_list_or(get_all_by_type((FunctionType.DTOR, FunctionType.DTOR_VIRTUAL)), None), 
+        'ctors': get_all_by_type((FunctionType.CTOR, )),
+        'virtual_methods': get_all_by_type((FunctionType.VIRTUAL, )),
+        'methods': get_all_by_type((FunctionType.METHOD, )), 
+        'static_fns': get_all_by_type((FunctionType.STATIC, ))
     }

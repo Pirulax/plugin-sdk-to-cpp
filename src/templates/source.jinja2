@@ -1,6 +1,7 @@
 #include "StdInc.h"
-
 #include "{{ class_name }}.h"
+
+{%- from "print_if.jinja2" import print_if with context -%}
 
 {# Macros #}
 {%- macro function_def(fn, name, ret_type=fn.ret_type) -%}
@@ -24,7 +25,7 @@
 
 {% include "source/static_vars.jinja2" %}
 
-{% if not virtual_fns %}
+{% if not virtual_methods %}
 {% include "source/inject_hooks.jinja2" %}
 {% endif %}
 
@@ -38,26 +39,33 @@
     {% include "source/destructror.jinja2" %}
 {% endif %}
 
-{# Regular functions #}
-{%- for fn in regular_fns %}
+{# Static functions #}
+{{ print_if("// Static functions", static_fns) }}
+{%- for fn in static_fns %}
     {{- function_def_plugin(fn, fn.name) }}
 {% endfor %}
 
-{# Virtual functions #}
-{%- for fn in virtual_fns -%}
-    {# Function body for wrapped virtual function #}
+{# Methods #}
+{{ print_if("// Methods", methods) }}
+{% for fn in methods %}
+    {{- function_def_plugin(fn, fn.name) }}
+{% endfor %}
+
+{# Virtual methods #}
+{{ print_if("// Virtual methods", methods) }}
+{%- for fn in virtual_methods -%}
+    {# Function body for wrapped virtual method #}
     {% call function_def(fn, fn.name) %}
     {{ fn.name }}_Reversed({{ fn.param_names }});
     {% endcall %}
-
 {% endfor %}
 
-{% if virtual_fns %}
+{% if virtual_methods %}
 {% include "source/inject_hooks.jinja2" %}
 {% endif %}
 
-{# _Reversed wrapper for above virtual function #}
-{%- for fn in virtual_fns -%}
+{# _Reversed wrapper for above virtual method #}
+{%- for fn in virtual_methods -%}
     {% call function_def(fn, fn.name  + "_Reversed") %}
     {{ class_name }}::{{ fn.name }}({{ fn.param_names }});
     {% endcall %}
