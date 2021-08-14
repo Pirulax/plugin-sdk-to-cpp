@@ -32,7 +32,7 @@ public:
     virtual {{ fn_decl(fn, fn.name) }};
 {% endfor -%}
 
-{{ print_if("private:", dtor or ctors) }}
+{{ print_if("private:", dtor or ctors|length) }}
 {% include 'header/constructror.jinja2' %}
 {% include 'header/destructror.jinja2' %}
 

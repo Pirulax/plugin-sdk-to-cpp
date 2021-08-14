@@ -6,7 +6,7 @@ import re
 from models.CallingConvention import CallingConvention
 import ArgsExtract
 
-name_re = re.compile(r'(?:::|__)(~?\w+)\(')
+name_re = re.compile(r'(?:::|__)(~?\w+)')
 
 
 def extract_name_from_demangled(demangled_name : str):

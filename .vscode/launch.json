@@ -10,7 +10,7 @@
             "request": "launch",
             "program": "src/main.py",
             "console": "integratedTerminal",
-            "args": ["--db-path", "C:/Users/Pirulax/Desktop/reversing/gta_sa/database", "--class-name", "CDirectory"]
+            "args": ["--db-path", "C:/Users/Pirulax/Desktop/reversing/gta_sa/database", "--class-name", "CTimer"]
         }
     ]
 }

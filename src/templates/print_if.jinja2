@@ -1,5 +1,11 @@
-{%- macro print_if(encaps, cond) -%}
+{%- macro print_if(msg, cond) -%}
 {%- if cond -%}
-{{ encaps }}
+{{ msg }}
+{%- endif -%}
+{%- endmacro -%}
+
+{%- macro print_if_array_not_empty(msg, a) -%}
+{%- if a and a|length -%}
+{{ msg }}
 {%- endif -%}
 {%- endmacro -%}
