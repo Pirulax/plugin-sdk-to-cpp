@@ -6,6 +6,7 @@ from pandas import read_csv
 
 from models.Variable import Variable
 from type_replacement import normalize_type
+from args import DATABASE_PATH
 
 strip_name_re = re.compile(r'::(\w+)')
 
@@ -15,8 +16,8 @@ def strip_name(demangled_name):
 
 
 # Returns a DataFrame of variables belonging to this class
-def extract(class_name: str, database: Path):
-    csv_path = database / 'plugin-sdk.out.variables.csv'
+def extract(class_name: str):
+    csv_path = DATABASE_PATH / 'plugin-sdk.out.variables.csv'
     if not csv_path.exists():
         raise FileNotFoundError('plugin-sdk.out.variables.csv not present. Try re-running IDA plugin-sdk exporter.')
 
