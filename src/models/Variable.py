@@ -1,5 +1,6 @@
 import re
 from dataclasses import dataclass
+import warnings
 
 # Matches array subscript only. Eg: [][32]
 subscript_re = re.compile(r'((?:(?:\s*\[[\d\s]*\]))+)')
@@ -28,8 +29,10 @@ class Variable:
 
     def __post_init__(self):
         # TODO (Izzotop): Fix that
-        if self.type != '':
+        if self.type:
             self.no_extent_type, self.array_subscript = remove_all_extents(self.type)
+        else:
+            warnings.warn(f"Type of {self.full_name} not defined. Using `None` instead. To fix this, go to IDA, press Y on this variable, then enter, reexport, and you are gtg")
 
         if not self.stripped_name:
             self.stripped_name = self.full_name
