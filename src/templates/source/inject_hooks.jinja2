@@ -23,8 +23,20 @@
     {%- endif -%}
 {%- endmacro -%}
 
-void {{ class_name }}::InjectHooks() {
-{% for fn in ctors + [dtor] + regular_fns + virtual_fns %}
+{%- macro do_injects_for(list, name) -%}
+{%- if list -%}
+// {{ name }}
+{% for fn in list %}
     // ReversibleHooks::Install("{{ class_name }}", "{{ fn.name }}", {{ fn.address }}, {{ address_of(fn) }});
 {% endfor %}
+
+{%- endif -%}
+{%- endmacro -%}
+
+void {{ class_name }}::InjectHooks() {
+do_injects_for(ctors, "Constructors")
+do_injects_for(dtor, "Destructors")
+do_injects_for(static_fns, "Static functions")
+do_injects_for(methods, "Methods")
+do_injects_for(virtual_methods, "Virtual methods")
 }
