@@ -1,16 +1,20 @@
 import re
 from dataclasses import dataclass
 
-extract_info_from_type_re = re.compile(r'(\w+)((?:\[\d*\])+)?')
-
+# Matches array subscript only. Eg: [][32]
+subscript_re = re.compile(r'((?:(?:\s*\[[\d\s]*\]))+)')
 
 def remove_all_extents(t):
     # Does the same as std::remove_all_extents
     # Return T, and subscript of array.
     # Eg.: type = "char[10]", this function will return "char", "[10]"
 
-    match = extract_info_from_type_re.search(t)
-    return match.group(1), match.group(2)
+    subscript_match = subscript_re.search(t)
+    if subscript_match:
+        subscript = subscript_match.group(1)
+        return t.replace(subscript, ''), subscript
+
+    return t, None
 
 
 @dataclass
