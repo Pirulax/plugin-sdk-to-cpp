@@ -1,3 +1,5 @@
+{%- from "print_if.jinja2" import print_if with context -%}
+
 {{ print_if("public:\n", static_vars) -}}
 {%- for v in static_vars %}
 {%- if v.array_subscript -%} {# Array type #}

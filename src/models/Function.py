@@ -14,11 +14,12 @@ def extract_name_from_demangled(demangled_name : str):
     return name_re.search(name).group(1)
 
 class FunctionType(Enum):
-    REGULAR      = 0
-    VIRTUAL      = 1
-    CTOR         = 2
-    DTOR         = 3
-    DTOR_VIRTUAL = 4
+    METHOD       = 0
+    STATIC       = 1
+    VIRTUAL      = 2
+    CTOR         = 3
+    DTOR         = 4
+    DTOR_VIRTUAL = 5
 
 class Function:
     cls: str              # Class this function belongs to
@@ -49,8 +50,10 @@ class Function:
         elif self.name == '~' + self.cls:
             self.type = FunctionType.DTOR if self.vt_index == -1 else FunctionType.DTOR_VIRTUAL
             self.ret_type = self.cls + '*'
+        elif self.cc.is_static:
+            self.type = FunctionType.STATIC
         else:
-            self.type = FunctionType.REGULAR if self.vt_index == -1 else FunctionType.VIRTUAL
+            self.type = FunctionType.METHOD if self.vt_index == -1 else FunctionType.VIRTUAL
 
     @property
     def full_name(self):
