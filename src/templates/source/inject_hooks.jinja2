@@ -35,7 +35,7 @@
 
 void {{ class_name }}::InjectHooks() {
 {{ do_injects_for(ctors, "Constructors") }}
-{{ do_injects_for(dtor, "Destructors") }}
+{{ do_injects_for([dtor], "Destructors") }}
 {{ do_injects_for(static_fns, "Static functions") }}
 {{ do_injects_for(methods, "Methods") }}
 {{ do_injects_for(virtual_methods, "Virtual methods") }}
