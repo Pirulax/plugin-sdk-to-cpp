@@ -61,7 +61,7 @@ def extract(class_name: str):
 
     # Create Function objects
     fns = csv_df.apply(
-        lambda s: Function(class    _name=class_name, **s),
+        lambda s: Function(class_name=class_name, **s),
         axis=1  # Apply on each row
     )
     
