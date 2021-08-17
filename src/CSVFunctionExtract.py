@@ -48,7 +48,7 @@ def extract(class_name: str):
 
     csv_df = read_csv(csv_path, dtype={k: v[0] for k, v in cols.items()}, usecols=cols.keys(), engine='c', sep=',', na_values=[], keep_default_na=False)
     csv_df.rename(columns={k: v[1] for k, v in cols.items()}, inplace=True) # Rename columns in order for Function constructor to work
-    csv_df = csv_df[csv_df['demangled_name'].str.startswith(class_name)]  # Filter to only contain class members
+    csv_df = csv_df[csv_df['demangled_name'].str.startswith(class_name + '::')]  # Filter to only contain class members
 
     # Add these 2 columns
     csv_df['stripped_name'] = csv_df['demangled_name'].apply(lambda dn: extract_name_from_demangled(dn))
@@ -61,7 +61,7 @@ def extract(class_name: str):
 
     # Create Function objects
     fns = csv_df.apply(
-        lambda s: Function(class_name=class_name, **s),
+        lambda s: Function(class    _name=class_name, **s),
         axis=1  # Apply on each row
     )
     
