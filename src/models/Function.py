@@ -123,3 +123,6 @@ class Function:
         template += self.arg_types
         args += self.arg_names
         return f'{"" if self.ret_type == "void" else "return "}plugin::{plugin_func}<{", ".join(template)}>({", ".join(args)})'
+
+    def __repr__(self) -> str:
+        return f'{self.name} @ {self.address}'

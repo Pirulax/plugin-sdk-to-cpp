@@ -34,7 +34,7 @@ def extract(class_name: str):
     }
 
     csv_df = read_csv(csv_path, engine='c', sep=',', usecols=cols.keys(), dtype=cols, na_values=[], keep_default_na=False)
-    csv_df = csv_df.loc[lambda s: s['DemangledName'].str.startswith(class_name)]
+    csv_df = csv_df.loc[lambda s: s['DemangledName'].str.startswith(class_name + '::')]
     return csv_df[['10us', 'Type', 'DemangledName']].apply(
         lambda s: Variable(
             address=s[0],

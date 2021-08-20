@@ -52,7 +52,7 @@
 {% endfor %}
 
 {# Virtual methods #}
-{{ print_if_array_not_empty("// Virtual methods", methods) }}
+{{ print_if_array_not_empty("// Virtual methods", virtual_methods) }}
 {%- for fn in virtual_methods -%}
     {# Function body for wrapped virtual method #}
     {% call function_def(fn, fn.name) %}

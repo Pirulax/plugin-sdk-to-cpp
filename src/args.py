@@ -37,7 +37,12 @@ parser.add_argument(
     type=CallingConvention,
     help='Assume the given calling convention by default for functions whose CC isn`t valid. If this argument is given without value it is defaulted to cdecl'
 )
-
+parser.add_argument(
+    '--debug',
+    action='store_true',
+    default=False,
+    help='Enable debug mode'
+)
 # TODO
 # parser.add_argument(
 #     '--rcalls',
@@ -73,3 +78,4 @@ DATABASE_PATH = args.db_path
 OUTPUT_PATH = args.output
 ARG_TYPES_FROM_DEMANGLED_NAME = True
 ASSUMED_CC = args.assumed_cc
+DEBUG_MODE = args.debug
