@@ -1,0 +1,11 @@
+{%- macro print_if(msg, cond) -%}
+{%- if cond -%}
+{{ msg }}
+{%- endif -%}
+{%- endmacro -%}
+
+{%- macro print_if_array_not_empty(msg, a) -%}
+{%- if a and a|length -%}
+{{ msg }}
+{%- endif -%}
+{%- endmacro -%}

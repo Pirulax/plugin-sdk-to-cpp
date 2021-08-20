@@ -1,16 +1,21 @@
 import re
 from dataclasses import dataclass
+import warnings
 
-extract_info_from_type_re = re.compile(r'(\w+)((?:\[\d*\])+)?')
-
+# Matches array subscript only. Eg: [][32]
+subscript_re = re.compile(r'((?:(?:\s*\[[\d\s]*\]))+)')
 
 def remove_all_extents(t):
     # Does the same as std::remove_all_extents
     # Return T, and subscript of array.
     # Eg.: type = "char[10]", this function will return "char", "[10]"
 
-    match = extract_info_from_type_re.search(t)
-    return match.group(1), match.group(2)
+    subscript_match = subscript_re.search(t)
+    if subscript_match:
+        subscript = subscript_match.group(1)
+        return t.replace(subscript, ''), subscript
+
+    return t, None
 
 
 @dataclass
@@ -24,8 +29,10 @@ class Variable:
 
     def __post_init__(self):
         # TODO (Izzotop): Fix that
-        if self.type != '':
+        if self.type:
             self.no_extent_type, self.array_subscript = remove_all_extents(self.type)
+        else:
+            warnings.warn(f"Type of {self.full_name} not defined. Using `None` instead. To fix this, go to IDA, press Y on this variable, then enter, reexport, and you are gtg")
 
         if not self.stripped_name:
             self.stripped_name = self.full_name

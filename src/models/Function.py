@@ -5,8 +5,10 @@ import numpy as np
 import re
 from models.CallingConvention import CallingConvention
 import ArgsExtract
+from args import ASSUMED_CC
+import sys
 
-name_re = re.compile(r'(?:::|__)(~?\w+)\(')
+name_re = re.compile(r'(?:::|__)(~?\w+)')
 
 
 def extract_name_from_demangled(demangled_name : str):
@@ -39,7 +41,17 @@ class Function:
         self.address = address
         self.ret_type = normalize_type(ret_type)
         self.vt_index = vt_index
-        self.cc = CallingConvention(cc)
+        
+        try:
+            self.cc = CallingConvention(cc)
+        except ValueError:
+            if ASSUMED_CC:
+                print(f"Function {self.name}({self.address}) has invalid CC (`{cc}`). Using assumed cc `{ASSUMED_CC}`")
+                self.cc = CallingConvention(ASSUMED_CC)
+            else:
+                print(f"Function {self.name}({self.address}) has invalid CC (`{cc}`). Aborting. Use `--assumed-cc` to default a calling convention. This error can be fixed by going to IDA, pressing Y on the given function, then enter.")
+                exit(1)
+
         self.arg_names, self.arg_types = ArgsExtract.extract(arg_types, arg_names, demangled_name, self.cc)
         self.is_overloaded = is_overloaded
 
@@ -111,3 +123,6 @@ class Function:
         template += self.arg_types
         args += self.arg_names
         return f'{"" if self.ret_type == "void" else "return "}plugin::{plugin_func}<{", ".join(template)}>({", ".join(args)})'
+
+    def __repr__(self) -> str:
+        return f'{self.name} @ {self.address}'

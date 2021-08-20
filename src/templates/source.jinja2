@@ -1,7 +1,7 @@
 #include "StdInc.h"
 #include "{{ class_name }}.h"
 
-{%- from "print_if.jinja2" import print_if with context -%}
+{% from "print_if.jinja2" import print_if_array_not_empty with context -%}
 
 {# Macros #}
 {%- macro function_def(fn, name, ret_type=fn.ret_type) -%}
@@ -40,19 +40,19 @@
 {% endif %}
 
 {# Static functions #}
-{{ print_if("// Static functions", static_fns) }}
-{%- for fn in static_fns %}
+{{ print_if_array_not_empty("// Static functions", static_fns) }}
+{% for fn in static_fns %}
     {{- function_def_plugin(fn, fn.name) }}
 {% endfor %}
 
 {# Methods #}
-{{ print_if("// Methods", methods) }}
+{{ print_if_array_not_empty("// Methods", methods) }}
 {% for fn in methods %}
     {{- function_def_plugin(fn, fn.name) }}
 {% endfor %}
 
 {# Virtual methods #}
-{{ print_if("// Virtual methods", methods) }}
+{{ print_if_array_not_empty("// Virtual methods", virtual_methods) }}
 {%- for fn in virtual_methods -%}
     {# Function body for wrapped virtual method #}
     {% call function_def(fn, fn.name) %}

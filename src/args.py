@@ -1,5 +1,6 @@
 from argparse import ArgumentParser
 from pathlib import Path
+from models.CallingConvention import CallingConvention
 
 parser = ArgumentParser(description='IDA .h and .cpp wrapper file generator.')
 parser.add_argument(
@@ -29,7 +30,19 @@ parser.add_argument(
     action='store_true',
     help='Function parameter types will be extracted from the demangled name rather than the function prototype.'
 )
-
+parser.add_argument(
+    '--assumed-cc',
+    nargs='?',
+    const='cdecl',
+    type=CallingConvention,
+    help='Assume the given calling convention by default for functions whose CC isn`t valid. If this argument is given without value it is defaulted to cdecl'
+)
+parser.add_argument(
+    '--debug',
+    action='store_true',
+    default=False,
+    help='Enable debug mode'
+)
 # TODO
 # parser.add_argument(
 #     '--rcalls',
@@ -64,3 +77,5 @@ args.output.mkdir(parents=True, exist_ok=True)  # Make sure dir exists
 DATABASE_PATH = args.db_path
 OUTPUT_PATH = args.output
 ARG_TYPES_FROM_DEMANGLED_NAME = True
+ASSUMED_CC = args.assumed_cc
+DEBUG_MODE = args.debug

@@ -24,4 +24,3 @@ class CallingConvention(Enum):
     def has_to_specify(self):
         # True if the CC has to be specified in the function def/decl, False otherwise
         return self.is_special
-    

@@ -32,7 +32,7 @@ public:
     virtual {{ fn_decl(fn, fn.name) }};
 {% endfor -%}
 
-{{ print_if("private:", dtor or ctors) }}
+{{ print_if("private:", dtor or ctors|length) }}
 {% include 'header/constructror.jinja2' %}
 {% include 'header/destructror.jinja2' %}
 
@@ -40,6 +40,6 @@ public:
     {{ fn_decl(fn, fn.name + '_Reversed') }};
 {% endfor %}
 };
-{%- if class_size and class_size != '0x0' -%}
+{% if class_size and class_size != '0x0' %}
 VALIDATE_SIZE({{ class_name }}, {{ class_size }});
-{%- endif -%}
+{% endif %}

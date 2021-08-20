@@ -7,7 +7,7 @@ from pandas import read_csv
 from models.Function import FunctionType, Function
 from type_replacement import normalize_type
 
-from args import DATABASE_PATH
+from args import DATABASE_PATH, DEBUG_MODE
 
 # Extract function name from DemangledName column
 name_re = re.compile(r'::(~?\w+)\(*?')
@@ -48,7 +48,7 @@ def extract(class_name: str):
 
     csv_df = read_csv(csv_path, dtype={k: v[0] for k, v in cols.items()}, usecols=cols.keys(), engine='c', sep=',', na_values=[], keep_default_na=False)
     csv_df.rename(columns={k: v[1] for k, v in cols.items()}, inplace=True) # Rename columns in order for Function constructor to work
-    csv_df = csv_df[csv_df['demangled_name'].str.startswith(class_name)]  # Filter to only contain class members
+    csv_df = csv_df[csv_df['demangled_name'].str.startswith(class_name + '::')]  # Filter to only contain class members
 
     # Add these 2 columns
     csv_df['stripped_name'] = csv_df['demangled_name'].apply(lambda dn: extract_name_from_demangled(dn))
@@ -70,7 +70,7 @@ def extract(class_name: str):
     # Get all functions by type as a py list
     get_all_by_type = lambda ts: fns[fns.apply(lambda f: f.type in ts)].tolist()
 
-    return {
+    fns_by_type = {
         # There can be only one destructor, so this has to be a single item, not a list
         'dtor': first_of_list_or(get_all_by_type((FunctionType.DTOR, FunctionType.DTOR_VIRTUAL)), None), 
         'ctors': get_all_by_type((FunctionType.CTOR, )),
@@ -78,3 +78,12 @@ def extract(class_name: str):
         'methods': get_all_by_type((FunctionType.METHOD, )), 
         'static_fns': get_all_by_type((FunctionType.STATIC, ))
     }
+
+    if DEBUG_MODE:
+        for k, v in fns_by_type.items():
+            if v:
+                print(f"==> {k}")
+                print(v)
+
+    return fns_by_type
+    
