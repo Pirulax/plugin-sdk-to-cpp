@@ -1,4 +1,5 @@
 from enum import Enum
+from functools import cache
 from type_replacement import normalize_type
 from typing import List
 import numpy as np
@@ -68,19 +69,23 @@ class Function:
             self.type = FunctionType.METHOD if self.vt_index == -1 else FunctionType.VIRTUAL
 
     @property
+    @cache
     def full_name(self):
         # Name with class namespace prefix. Eg.: Class::Function
         return f'{self.cls}::{self.name}'
 
     @property
+    @cache
     def param_names(self) -> str:
         return ', '.join(self.arg_names)
 
     @property
+    @cache
     def param_types(self) -> str:
         return ', '.join(self.arg_types)
 
     @property
+    @cache
     def param_name_types(self) -> str:
         return ', '.join([' '.join(a) for a in zip(self.arg_types, self.arg_names)])
 
@@ -105,23 +110,27 @@ class Function:
         return self.cc.is_method
 
     @property
+    @cache
     def plugin_call_src(self):
         # C++ source code for the plugin call stuff
 
         template = []
         args = []
+
         plugin_func = self.cc.plugin_fn
         if self.ret_type != 'void':
             plugin_func += 'AndReturn'
             template.append(self.ret_type)
 
         template.append(self.address)
-        if self.cc in ('thiscall', 'fastcall'):  # Check is method call
+
+        if self.cc.is_method:
             template.append(self.cls + '*')
             args.append('this')
 
         template += self.arg_types
         args += self.arg_names
+        
         return f'{"" if self.ret_type == "void" else "return "}plugin::{plugin_func}<{", ".join(template)}>({", ".join(args)})'
 
     def __repr__(self) -> str:
