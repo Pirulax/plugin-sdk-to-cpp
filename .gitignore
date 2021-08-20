@@ -407,3 +407,4 @@ cython_debug/
 # End of https://www.toptal.com/developers/gitignore/api/visualstudiocode,pycharm,clion,jetbrains,python
 
 output/*
+.vscode/launch.json
