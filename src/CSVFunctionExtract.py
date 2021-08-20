@@ -1,13 +1,14 @@
 import re
-from pathlib import Path
+
+from pandas.core.frame import DataFrame
+from args import OUTPUT_PATH
 
 import numpy as np
 from pandas import read_csv
 
 from models.Function import FunctionType, Function
-from type_replacement import normalize_type
 
-from args import DATABASE_PATH, DEBUG_MODE
+from args import DATABASE_PATH, DEBUG_MODE, DUMP_PROTOTYPES
 
 # Extract function name from DemangledName column
 name_re = re.compile(r'::(~?\w+)\(*?')
@@ -20,6 +21,22 @@ def extract_name_from_demangled(demangled_name : str):
 # https://stackoverflow.com/questions/363944
 def first_of_list_or(list, default_value):
     return next(iter(list), default_value)
+
+operator_re = re.compile(r'\boperator\s*\b')  
+def dump_prototypes(class_name : str, df : DataFrame):
+
+    class_prefix_re = re.compile(f'{class_name}(?:__|::)')
+    def normalize(prot : str):
+        prot = class_prefix_re.sub('', prot)
+        prot = operator_re.sub('operator_', prot) # replace `operator new` with `operator_new` (add underscore basically)
+        return prot.replace('~', 'Destructor_')
+
+    with (OUTPUT_PATH / f'{class_name}_Prototypes.h').open(mode='w') as f:
+
+        def to_file(fn):
+            f.write(f'{fn["ret_type"]} {normalize(fn["demangled_name"])};\n')
+
+        df.apply(to_file, axis=1)
 
 #  Returns a tuple of (Non-Virtual, and Virtual[Sorted by vmt index]) functions belonging to this class
 def extract(class_name: str):
@@ -58,6 +75,9 @@ def extract(class_name: str):
     # their VMT indices won't wont match up with GTAs
     csv_df.sort_values(inplace=True, by='vt_index')
     csv_df.reset_index(inplace=True)
+
+    if DUMP_PROTOTYPES:
+        dump_prototypes(class_name, csv_df)
 
     # Create Function objects
     fns = csv_df.apply(

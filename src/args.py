@@ -43,6 +43,12 @@ parser.add_argument(
     default=False,
     help='Enable debug mode'
 )
+parser.add_argument(
+    '--dump-prot',
+    action='store_true',
+    default=False,
+    help='Dump function prototypes'
+)
 # TODO
 # parser.add_argument(
 #     '--rcalls',
@@ -79,3 +85,4 @@ OUTPUT_PATH = args.output
 ARG_TYPES_FROM_DEMANGLED_NAME = True
 ASSUMED_CC = args.assumed_cc
 DEBUG_MODE = args.debug
+DUMP_PROTOTYPES = args.dump_prot
