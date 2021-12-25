@@ -1,0 +1,1 @@
+py -3.9 src/main.py --pdtypes --db-path "C:\Users\Pirulax\Desktop\reversing\gta_sa\database" --class-name CPed
