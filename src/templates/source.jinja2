@@ -23,8 +23,9 @@
     {% endcall -%}
 {%- endmacro -%}
 
+{%- if not USE_STATIC_INLINE -%}
 {% include "source/static_vars.jinja2" %}
-
+{%- endif %}
 {% if not virtual_methods %}
 {% include "source/inject_hooks.jinja2" %}
 {% endif %}

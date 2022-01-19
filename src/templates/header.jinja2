@@ -6,7 +6,11 @@
 
 
 class {{ class_name }} {
-{% include 'header/static_vars.jinja2' %}
+{% if USE_STATIC_INLINE %}
+    {%- include 'header/static_inline_vars.jinja2' %}
+{%- else -%}
+    {%- include 'header/static_vars.jinja2' %}
+{%- endif -%}
 {% include 'header/member_vars.jinja2' %}
 
 public:

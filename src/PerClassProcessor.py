@@ -3,6 +3,7 @@ import jinja2 as j2
 import CSVFunctionExtract
 import CSVStaticVariableExtract
 import JSONStructExtract
+import args
 
 def process(class_name : str):
     j2env = j2.Environment(
@@ -15,6 +16,7 @@ def process(class_name : str):
  
     j2env.globals.update({
         'class_name': class_name,
+        'USE_STATIC_INLINE': args.USE_STATIC_INLINE,
         'static_vars': CSVStaticVariableExtract.extract(class_name),
         **CSVFunctionExtract.extract(class_name),
         **JSONStructExtract.extract(class_name)

@@ -49,6 +49,12 @@ parser.add_argument(
     default=False,
     help='Dump function prototypes'
 )
+parser.add_argument(
+    '--use-static-inline',
+    action='store_true',
+    default=False,
+    help='Define variables in header using C++17 `static inline`'
+)
 # TODO
 # parser.add_argument(
 #     '--rcalls',
@@ -86,3 +92,4 @@ ARG_TYPES_FROM_DEMANGLED_NAME = True
 ASSUMED_CC = args.assumed_cc
 DEBUG_MODE = args.debug
 DUMP_PROTOTYPES = args.dump_prot
+USE_STATIC_INLINE = args.use_static_inline
