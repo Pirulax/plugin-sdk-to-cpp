@@ -1,42 +1,49 @@
 {# Returns the name of the function we should take the address of #}
-{%- macro raw_address_of(fn) -%}
+{%- macro real_function_name(fn) -%}
     {%- if fn.is_ctor -%}
-        &{{ class_name }}::Constructor
+        Constructor
     {%- elif fn.is_dtor -%}
-        &{{ class_name }}::Destructor
+        Destructor
     {%- elif fn.is_virtual -%}
-        &{{ class_name }}::{{ fn.name }}_Reversed
+        {{ fn.name }}_Reversed
     {%- else -%}
-        &{{ class_name }}::{{ fn.name }}
+        {{ fn.name }}
     {%- endif -%}
 {%- endmacro -%}
 
-{%- macro overloaded_address_of(fn) -%}
-    static_cast<{{fn.ret_type}}({{ '*' if fn.is_static else class_name + '::'  }}*)({{ fn.param_types }})>({{ raw_address_of(fn) }})
-{%- endmacro -%}
-
-{%- macro address_of(fn) -%}
-    {%- if fn.is_overloaded -%}
-        {{ overloaded_address_of(fn) }}
-    {%- else -%}
-        {{ raw_address_of(fn) }}
-    {%- endif -%}
+{%- macro overloaded_cast_of(fn) -%}
+    {{fn.ret_type}}({{ '*' if fn.is_static else class_name + '::'  }}*)({{ fn.param_types }})
 {%- endmacro -%}
 
 {%- macro do_injects_for(list, name) -%}
 {%- if list and list|length -%}
 // {{ name }} ({{ list|length }}x)
 {% for fn in list %}
-    // ReversibleHooks::Install("{{ class_name }}", "{{ fn.name }}", {{ fn.address }}, {{ address_of(fn) }});
+    {%- if fn.is_overloaded -%}
+        {%- if fn.is_static  -%}
+            RH_ScopedGlobalOverloadedInstall({{real_function_name(fn)}}, "", {{fn.address}}, {{overloaded_cast_of(fn)}});
+        {% else -%}
+            RH_ScopedOverloadedInstall({{real_function_name(fn)}}, "", {{fn.address}}, {{overloaded_cast_of(fn)}});
+        {% endif -%}
+    {%- else -%}
+        {%- if fn.is_static  -%}
+            RH_ScopedGlobalInstall({{real_function_name(fn)}}, {{fn.address}});
+        {% else -%}
+            RH_ScopedInstall({{real_function_name(fn)}}, {{fn.address}});
+        {% endif -%}
+    {%- endif -%}
 {% endfor %}
 
 {%- endif -%}
 {%- endmacro -%}
 
 void {{ class_name }}::InjectHooks() {
-{{ do_injects_for(ctors, "Constructors") }}
-{{ do_injects_for([dtor] if dtor else [], "Destructors") }}
-{{ do_injects_for(static_fns, "Static functions") }}
-{{ do_injects_for(methods, "Methods") }}
-{{ do_injects_for(virtual_methods, "Virtual methods") }}
+    RH_ScopedClass({{class_name}});
+    RH_ScopedCategoryGlobal(); // TODO: Change this to the appropriate category!
+
+{{ do_injects_for(ctors, "Constructors") | indent(4) }}
+{{ do_injects_for([dtor] if dtor else [], "Destructors") | indent(4) }}
+{{ do_injects_for(static_fns, "Static functions") | indent(4) }}
+{{ do_injects_for(methods, "Methods") | indent(4) }}
+{{ do_injects_for(virtual_methods, "Virtual methods") | indent(4) }}
 }
