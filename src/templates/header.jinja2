@@ -1,14 +1,16 @@
 {%- from "print_if.jinja2" import print_if with context -%}
 
+{# Macros #}
+{# Function declaration (Eg.: Function with no body) #}
 {%- macro fn_decl(fn, name, ret_type=fn.ret_type) %}
 {% if ret_type %}{{ ret_type }} {% endif %}{{ name }}({{ fn.param_name_types }})
 {%- endmacro -%}
 
-
 class {{ class_name }} {
-{% if USE_STATIC_INLINE %}
+{# Static variables #}
+{% if USE_STATIC_INLINE %} {# Declaration + Definition using `static inline` #}
     {%- include 'header/static_inline_vars.jinja2' %}
-{%- else -%}
+{%- else -%} {# Just declarations #}
     {%- include 'header/static_vars.jinja2' %}
 {%- endif -%}
 {% include 'header/member_vars.jinja2' %}
@@ -40,10 +42,11 @@ public:
 {% include 'header/constructror.jinja2' %}
 {% include 'header/destructror.jinja2' %}
 
+{# Virtual method _Reversed wrappers (Which just redirect to this class's virtual function) #}
 {% for fn in virtual_methods %}
-    {{ fn_decl(fn, fn.name + '_Reversed') }};
+    {{ fn.ret_type }} {{ fn.name + "_Reversed"}}({{ fn.param_name_types }}) { return {{ class_name }}::{{ fn.name }}({{ fn.param_names }}); }
 {% endfor %}
-};
+};{# End of class #}
 {% if class_size and class_size != '0x0' %}
 VALIDATE_SIZE({{ class_name }}, {{ class_size }});
 {% endif %}

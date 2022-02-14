@@ -21,14 +21,14 @@ REPLACE_MAP = {
     # and wont perform anymore replacements
     # This is done, because, logically, once the type has been normalized
     # it won't match any other group's criteria
-    'uint8_t': ('uchar', 'unsigned char', 'unsigned __int8', '_byte', 'byte', ),
-    'int8_t': ('__int8'), # dont wanna replace `char` because of `const char*`
+    'uint8': ('uchar', 'unsigned char', 'unsigned __int8', '_byte', 'byte', 'uint8', 'uint8_t', ),
+    'int8': ('__int8', 'int8', 'int8_t', ), # dont wanna replace `char` because of `const char*`
 
-    'uint16_t': ('ushort', 'unsigned short',  'unsigned __int16', ),
-    'int16_t': ('short', '__int16', 'word', '_word', ),
+    'uint16': ('ushort', 'unsigned short',  'unsigned __int16', 'uint16', 'uint16_t', ),
+    'int16': ('short', '__int16', 'word', '_word', 'int16', 'int16_t', ),
 
-    'uint32_t': ('uint', 'unsigned int', 'unsigned __int32', ),
-    'int32_t': ('int', '__int32','dword', '_dword', ),
+    'uint32': ('uint', 'unsigned int', 'unsigned __int32', 'uint32', 'uint32_t', ),
+    'int32': ('int', '__int32','dword', '_dword', 'int32', 'int32_t', ),
 
     'bool': ('_BOOL1', )
 }

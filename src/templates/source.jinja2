@@ -4,6 +4,8 @@
 {% from "print_if.jinja2" import print_if_array_not_empty with context -%}
 
 {# Macros #}
+
+{# Function definition where caller specifies the body #}
 {%- macro function_def(fn, name, ret_type=fn.ret_type) -%}
 // {{ fn.address }}
 {% if ret_type %}{{ ret_type }} {% endif %}{{ class_name }}::{{ name }}({{ fn.param_name_types }}) {
@@ -13,22 +15,24 @@
 }
 {% endmacro -%}
 
+{# Function with empty body #}
 {% macro function_def_empty_body(fn, name) -%}
     {%- call function_def(fn, fn.name) -%}{%- endcall -%}
 {%- endmacro -%}
 
+{# Function def for wrapper of functions that just redirect using `plugin::call` #}
 {%- macro function_def_plugin(fn, name) -%}
     {%- call function_def(fn, name) %}
     {{ fn.plugin_call_src | indent(4) }};
     {% endcall -%}
 {%- endmacro -%}
-
+ 
+{# Static variables defs (unless we use STATIC_INLINE) #}
 {%- if not USE_STATIC_INLINE -%}
 {% include "source/static_vars.jinja2" %}
 {%- endif %}
-{% if not virtual_methods %}
+
 {% include "source/inject_hooks.jinja2" %}
-{% endif %}
 
 {# Constructors #}
 {% for fn in ctors -%}
@@ -54,21 +58,6 @@
 
 {# Virtual methods #}
 {{ print_if_array_not_empty("// Virtual methods", virtual_methods) }}
-{%- for fn in virtual_methods -%}
-    {# Function body for wrapped virtual method #}
-    {% call function_def(fn, fn.name) %}
-    {{ fn.name }}_Reversed({{ fn.param_names }});
-    {% endcall %}
-{% endfor %}
-
-{% if virtual_methods %}
-{% include "source/inject_hooks.jinja2" %}
-{% endif %}
-
-{# _Reversed wrapper for above virtual method #}
-{%- for fn in virtual_methods -%}
-    {% call function_def(fn, fn.name  + "_Reversed") %}
-    {{ class_name }}::{{ fn.name }}({{ fn.param_names }});
-    {% endcall %}
-
+{% for fn in virtual_methods -%}
+    {{- function_def_plugin(fn, fn.name) }}
 {% endfor %}
