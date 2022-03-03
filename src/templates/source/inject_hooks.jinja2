@@ -21,15 +21,15 @@
 {% for fn in list %}
     {%- if fn.is_overloaded -%}
         {%- if fn.is_static  -%}
-            RH_ScopedGlobalOverloadedInstall({{real_function_name(fn)}}, "", {{fn.address}}, {{overloaded_cast_of(fn)}});
+            //RH_ScopedGlobalOverloadedInstall({{real_function_name(fn)}}, "", {{fn.address}}, {{overloaded_cast_of(fn)}});
         {% else -%}
-            RH_ScopedOverloadedInstall({{real_function_name(fn)}}, "", {{fn.address}}, {{overloaded_cast_of(fn)}});
+            //RH_ScopedOverloadedInstall({{real_function_name(fn)}}, "", {{fn.address}}, {{overloaded_cast_of(fn)}});
         {% endif -%}
     {%- else -%}
         {%- if fn.is_static  -%}
-            RH_ScopedGlobalInstall({{real_function_name(fn)}}, {{fn.address}});
+            //RH_ScopedGlobalInstall({{real_function_name(fn)}}, {{fn.address}});
         {% else -%}
-            RH_ScopedInstall({{real_function_name(fn)}}, {{fn.address}});
+            //RH_ScopedInstall({{real_function_name(fn)}}, {{fn.address}});
         {% endif -%}
     {%- endif -%}
 {% endfor %}
