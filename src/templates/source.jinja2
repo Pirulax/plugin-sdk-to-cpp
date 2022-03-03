@@ -45,19 +45,19 @@
 {% endif %}
 
 {# Static functions #}
-{{ print_if_array_not_empty("// Static functions", static_fns) }}
+{# {{ print_if_array_not_empty("// Static functions", static_fns) }} #}
 {% for fn in static_fns %}
     {{- function_def_plugin(fn, fn.name) }}
 {% endfor %}
 
 {# Methods #}
-{{ print_if_array_not_empty("// Methods", methods) }}
+{# {{ print_if_array_not_empty("// Methods", methods) }} #}
 {% for fn in methods %}
     {{- function_def_plugin(fn, fn.name) }}
 {% endfor %}
 
 {# Virtual methods #}
-{{ print_if_array_not_empty("// Virtual methods", virtual_methods) }}
+{# {{ print_if_array_not_empty("// Virtual methods", virtual_methods) }} #}
 {% for fn in virtual_methods -%}
     {{- function_def_plugin(fn, fn.name) }}
 {% endfor %}

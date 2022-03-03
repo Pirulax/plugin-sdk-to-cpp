@@ -17,7 +17,7 @@
 
 {%- macro do_injects_for(list, name) -%}
 {%- if list and list|length -%}
-// {{ name }} ({{ list|length }}x)
+{# // {{ name }} ({{ list|length }}x) #}
 {% for fn in list %}
     {%- if fn.is_overloaded -%}
         {%- if fn.is_static  -%}
