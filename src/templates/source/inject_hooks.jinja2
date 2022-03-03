@@ -39,7 +39,7 @@
 
 void {{ class_name }}::InjectHooks() {
     RH_ScopedClass({{class_name}});
-    RH_ScopedCategoryGlobal(); // TODO: Change this to the appropriate category!
+    RH_ScopedCategory(); // TODO: Change this to the appropriate category!
 
 {{ do_injects_for(ctors, "Constructors") | indent(4) }}
 {{ do_injects_for([dtor] if dtor else [], "Destructors") | indent(4) }}
