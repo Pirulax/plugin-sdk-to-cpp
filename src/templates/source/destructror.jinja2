@@ -1,5 +1,2 @@
+    {% from "function_def.jinja2" import function_def with context -%}
     {{- function_def(dtor, '~' + class_name, none) }}
-    {% call function_def(dtor, 'Destructor', class_name + '*') %}
-    this->{{ class_name }}::~{{ class_name }}({{ dtor.param_names }});
-    return this;
-    {% endcall %}

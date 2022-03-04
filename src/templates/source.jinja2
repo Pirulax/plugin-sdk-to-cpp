@@ -2,30 +2,7 @@
 #include "{{ class_name }}.h"
 
 {% from "print_if.jinja2" import print_if_array_not_empty with context -%}
-
-{# Macros #}
-
-{# Function definition where caller specifies the body #}
-{%- macro function_def(fn, name, ret_type=fn.ret_type) -%}
-// {{ fn.address }}
-{% if ret_type %}{{ ret_type }} {% endif %}{{ class_name }}::{{ name }}({{ fn.param_name_types }}) {
-    {% if caller -%}
-        {{- caller() -}}
-    {%- endif -%}
-}
-{% endmacro -%}
-
-{# Function with empty body #}
-{% macro function_def_empty_body(fn, name) -%}
-    {%- call function_def(fn, fn.name) -%}{%- endcall -%}
-{%- endmacro -%}
-
-{# Function def for wrapper of functions that just redirect using `plugin::call` #}
-{%- macro function_def_plugin(fn, name) -%}
-    {%- call function_def(fn, name) %}
-    {{ fn.plugin_call_src | indent(4) }};
-    {% endcall -%}
-{%- endmacro -%}
+{% from "function_def.jinja2" import function_def_plugin with context -%}
  
 {# Static variables defs (unless we use STATIC_INLINE) #}
 {%- if not USE_STATIC_INLINE -%}

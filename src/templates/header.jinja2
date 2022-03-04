@@ -1,4 +1,5 @@
 {%- from "print_if.jinja2" import print_if with context -%}
+{% from "function_def.jinja2" import function_def with context -%}
 
 {# Macros #}
 {# Function declaration (Eg.: Function with no body) #}
@@ -36,9 +37,10 @@ public:
 
 {% for fn in virtual_methods %}
     virtual {{ fn_decl(fn, fn.name) }};
-{% endfor -%}
+{% endfor %}
 
-{{ print_if("private:", dtor or ctors|length) }}
+private: // Wrappers for hooks
+
 {% include 'header/constructror.jinja2' %}
 {% include 'header/destructror.jinja2' %}
 

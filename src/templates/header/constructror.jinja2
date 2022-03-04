@@ -1,3 +1,7 @@
+{% from "function_def.jinja2" import function_def with context -%}
 {% for fn in ctors %}
-    {{ fn_decl(fn, "Constructor", class_name + '*') }};
+    {% call function_def(fn, 'Constructor', class_name + '*') %}
+    this->{{ class_name }}::{{ class_name }}({{ fn.param_names }});
+    return this;
+    {% endcall %}
 {% endfor -%}
