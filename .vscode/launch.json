@@ -10,7 +10,7 @@
             "request": "launch",
             "program": "src/main.py",
             "console": "integratedTerminal",
-            "args": ["--db-path", "C:/Users/Pirulax/Desktop/reversing/gta_sa/database", "--class-name", "CBouncingPanel", "--assumed-cc", "--debug", "--dump-prot"]
+            "args": ["--db-path", "C:/Users/Pirulax/Desktop/reversing/gta_sa/database", "--class-name", "CBouncingPanel", "--assumed-cc", "--debug", "--use-static-inline"]
         }
     ]
 }
