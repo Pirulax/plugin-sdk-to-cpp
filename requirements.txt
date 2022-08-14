@@ -1,3 +1,0 @@
-jinja2>2.9.2
-pandas>=1.0
-dataclasses

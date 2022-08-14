@@ -1,5 +1,7 @@
 from argparse import ArgumentParser
 from pathlib import Path
+
+import pandas
 from models.CallingConvention import CallingConvention
 
 parser = ArgumentParser(description='IDA .h and .cpp wrapper file generator.')
@@ -19,11 +21,17 @@ parser.add_argument(
 )
 parser.add_argument(
     '--class-name',
-    required=True,
-    metavar='name',
+    required=False,
+    metavar='class_name',
     type=str,
-    default='CVehicle',
     help='The class name in the IDB.'
+)
+parser.add_argument(
+    '--classes-to-process',
+    required=False,
+    metavar='classes_to_process',
+    type=str,
+    help='The file containing the list of classes to process, in csv format (columns): class_name'
 )
 parser.add_argument(
     '--pdtypes',
@@ -81,10 +89,17 @@ parser.add_argument(
 # )
 args = parser.parse_args()
 
+if not args.class_name and not args.classes_to_process:
+    raise ValueError('You must specify either --class-name or --classes-to-process')
+
 if not args.db_path.exists():
     raise NotADirectoryError('Plugin SDK export path invalid (-i). Run the IDA plugin-sdk exporter plugin. (IDA: Edit -> Plugins)')
-    
-args.output.mkdir(parents=True, exist_ok=True)  # Make sure dir exists
+
+if args.classes_to_process:
+    with open(args.classes_to_process, 'r') as f:
+        CLASSES_TO_PROCESS = pandas.read_csv(f)["class_name"].values
+else:
+    CLASSES_TO_PROCESS = None
 
 DATABASE_PATH = args.db_path
 OUTPUT_PATH = args.output
@@ -93,3 +108,5 @@ ASSUMED_CC = args.assumed_cc
 DEBUG_MODE = args.debug
 DUMP_PROTOTYPES = args.dump_prot
 USE_STATIC_INLINE = args.use_static_inline
+
+OUTPUT_PATH.mkdir(parents=True, exist_ok=True)  # Make sure dir exists
