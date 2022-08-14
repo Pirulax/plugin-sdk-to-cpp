@@ -63,12 +63,12 @@ parser.add_argument(
     default=False,
     help='Define variables in header using C++17 `static inline`'
 )
+parser.add_argument(
+    '--wrap-virtuals',
+    action='store_true',
+    help='Add `_Reversed` wrappers for virtual functions.'
+) 
 # TODO
-# parser.add_argument(
-#     '--rcalls',
-#     action='store_true',
-#     help='Adds <className>_Reversed wrappers for virtual functions.'
-# ) 
 # parser.add_argument(
 #     '--norwv3d',
 #     action='store_true',
@@ -101,12 +101,13 @@ if args.classes_to_process:
 else:
     CLASSES_TO_PROCESS = None
 
-DATABASE_PATH = args.db_path
-OUTPUT_PATH = args.output
+WRAP_VIRTUALS : bool = args.wrap_virtuals
+DATABASE_PATH : Path = args.db_path
+OUTPUT_PATH : Path = args.output
 ARG_TYPES_FROM_DEMANGLED_NAME = True
-ASSUMED_CC = args.assumed_cc
-DEBUG_MODE = args.debug
-DUMP_PROTOTYPES = args.dump_prot
-USE_STATIC_INLINE = args.use_static_inline
+ASSUMED_CC : CallingConvention = args.assumed_cc
+DEBUG_MODE : bool = args.debug
+DUMP_PROTOTYPES : bool = args.dump_prot
+USE_STATIC_INLINE : bool = args.use_static_inline
 
 OUTPUT_PATH.mkdir(parents=True, exist_ok=True)  # Make sure dir exists

@@ -45,10 +45,13 @@ private: // Wrappers for hooks
 {% include 'header/destructror.jinja2' %}
 
 {# Virtual method _Reversed wrappers (Which just redirect to this class's virtual function) #}
+{% if WRAP_VIRTUALS -%}
 {% for fn in virtual_methods %}
     {{ fn.ret_type }} {{ fn.name + "_Reversed"}}({{ fn.param_name_types }}) { return {{ class_name }}::{{ fn.name }}({{ fn.param_names }}); }
-{% endfor %}
+{% endfor -%}
+{% endif %}
 };{# End of class #}
+
 {% if class_size and class_size != '0x0' %}
 VALIDATE_SIZE({{ class_name }}, {{ class_size }});
 {% endif %}

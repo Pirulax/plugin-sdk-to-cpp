@@ -4,7 +4,7 @@
         Constructor
     {%- elif fn.is_dtor -%}
         Destructor
-    {%- elif fn.is_virtual -%}
+    {%- elif fn.is_virtual and WRAP_VIRTUALS -%}
         {{ fn.name }}_Reversed
     {%- else -%}
         {{ fn.name }}
@@ -15,23 +15,26 @@
     {{fn.ret_type}}({{ '*' if fn.is_static else class_name + '::'  }}*)({{ fn.param_types }})
 {%- endmacro -%}
 
+{%- macro install_of(fn) -%}
+{# This way we can have half as much code #}
+{%- set overloaded_str = 'Overloaded' if fn.is_overloaded else '' -%}
+{%- if fn.is_static  -%}
+    //RH_ScopedGlobal{{overloaded_str}}Install
+{%- elif fn.is_virtual -%}
+    //RH_Scoped{{overloaded_str}}VirtualInstall
+{%- else -%}
+    //RH_Scoped{{overloaded_str}}Install
+{%- endif -%}
+{%- endmacro -%}
+
 {%- macro do_injects_for(list, name) -%}
 {%- if list and list|length -%}
-{# // {{ name }} ({{ list|length }}x) #}
 {% for fn in list %}
     {%- if fn.is_overloaded -%}
-        {%- if fn.is_static  -%}
-            //RH_ScopedGlobalOverloadedInstall({{real_function_name(fn)}}, "", {{fn.address}}, {{overloaded_cast_of(fn)}});
-        {% else -%}
-            //RH_ScopedOverloadedInstall({{real_function_name(fn)}}, "", {{fn.address}}, {{overloaded_cast_of(fn)}});
-        {% endif -%}
-    {%- else -%}
-        {%- if fn.is_static  -%}
-            //RH_ScopedGlobalInstall({{real_function_name(fn)}}, {{fn.address}});
-        {% else -%}
-            //RH_ScopedInstall({{real_function_name(fn)}}, {{fn.address}});
-        {% endif -%}
-    {%- endif -%}
+        {{install_of(fn)}}({{real_function_name(fn)}}, "", {{fn.address}}, {{overloaded_cast_of(fn)}});
+    {% else -%}
+        {{install_of(fn)}}({{real_function_name(fn)}}, {{fn.address}});
+    {% endif -%}
 {% endfor %}
 
 {%- endif -%}
