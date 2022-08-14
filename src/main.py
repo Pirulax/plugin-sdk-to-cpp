@@ -13,7 +13,7 @@ import args
 
 
 if __name__ == '__main__':
-    if args.CLASSES_TO_PROCESS:
+    if args.CLASSES_TO_PROCESS is not None:
         for cls_name in args.CLASSES_TO_PROCESS:
             print(f"Processing {cls_name}...")
             PerClassProcessor.process(cls_name)
