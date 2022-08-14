@@ -18,6 +18,7 @@ def process(class_name : str):
         'class_name': class_name,
         'USE_STATIC_INLINE': args.USE_STATIC_INLINE,
         'WRAP_VIRTUALS': args.WRAP_VIRTUALS,
+        'CATEGORY': args.CATEGORY,
         'static_vars': CSVStaticVariableExtract.extract(class_name),
         **CSVFunctionExtract.extract(class_name),
         **JSONStructExtract.extract(class_name)

@@ -46,6 +46,12 @@ parser.add_argument(
     help='Assume the given calling convention by default for functions whose CC isn`t valid. If this argument is given without value it is defaulted to cdecl'
 )
 parser.add_argument(
+    '--category',
+    default="",
+    type=str,
+    help='The category of the class(es) to process. If using batch-process this servers as a default in case it`s not specified in the classes-to-process file'
+)
+parser.add_argument(
     '--debug',
     action='store_true',
     default=False,
@@ -109,5 +115,6 @@ ASSUMED_CC : CallingConvention = args.assumed_cc
 DEBUG_MODE : bool = args.debug
 DUMP_PROTOTYPES : bool = args.dump_prot
 USE_STATIC_INLINE : bool = args.use_static_inline
+CATEGORY : str = args.category
 
 OUTPUT_PATH.mkdir(parents=True, exist_ok=True)  # Make sure dir exists
