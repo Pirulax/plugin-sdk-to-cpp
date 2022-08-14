@@ -63,14 +63,21 @@ def extract(class_name: str):
         # 'ForceOverloaded': bool
     }
 
-    csv_df = read_csv(csv_path, dtype={k: v[0] for k, v in cols.items()}, usecols=cols.keys(), engine='c', sep=',', na_values=[], keep_default_na=False)
+    csv_df : DataFrame = read_csv(csv_path, dtype={k: v[0] for k, v in cols.items()}, usecols=cols.keys(), engine='c', sep=',', na_values=[], keep_default_na=False)
     csv_df.rename(columns={k: v[1] for k, v in cols.items()}, inplace=True) # Rename columns in order for Function constructor to work
 
     # Filter to only contain class members
     csv_df = csv_df[csv_df['demangled_name'].str.match(f'{class_name}(?:__|::)')] 
 
-    # Add these 2 columns
+    # Actual function name column
     csv_df['stripped_name'] = csv_df['demangled_name'].apply(lambda dn: extract_name_from_demangled(dn))
+
+    # Filter out all dtors other than the real one
+    # As there's another compiler generated dtor that has `deletingFlags` which just calles the original dtor
+    # But having that causes us to mark the dtor as overloaded below
+    csv_df = csv_df[~csv_df['stripped_name'].str.contains('~') | csv_df["arg_names"].str.endswith("this")]
+
+    # Is overloaded column
     csv_df['is_overloaded'] = csv_df['stripped_name'].duplicated(keep=False)
     
     # Sort virtual methods. Important, otherwise 
