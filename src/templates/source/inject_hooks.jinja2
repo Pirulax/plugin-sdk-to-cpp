@@ -19,11 +19,11 @@
 {# This way we can have half as much code #}
 {%- set overloaded_str = 'Overloaded' if fn.is_overloaded else '' -%}
 {%- if fn.is_static  -%}
-    //RH_ScopedGlobal{{overloaded_str}}Install
+    RH_ScopedGlobal{{overloaded_str}}Install
 {%- elif fn.is_virtual -%}
-    //RH_Scoped{{overloaded_str}}VirtualInstall
+    RH_Scoped{{overloaded_str}}VirtualInstall2
 {%- else -%}
-    //RH_Scoped{{overloaded_str}}Install
+    RH_Scoped{{overloaded_str}}Install
 {%- endif -%}
 {%- endmacro -%}
 
@@ -31,9 +31,9 @@
 {%- if list and list|length -%}
 {% for fn in list %}
     {%- if fn.is_overloaded -%}
-        {{install_of(fn)}}({{real_function_name(fn)}}, "", {{fn.address}}, {{overloaded_cast_of(fn)}});
+        {{install_of(fn)}}({{real_function_name(fn)}}, "", {{fn.address}}, {{overloaded_cast_of(fn)}}, { .enabled = false, .locked = true });
     {% else -%}
-        {{install_of(fn)}}({{real_function_name(fn)}}, {{fn.address}});
+        {{install_of(fn)}}({{real_function_name(fn)}}, {{fn.address}}, { .enabled = false, .locked = true });
     {% endif -%}
 {% endfor %}
 
