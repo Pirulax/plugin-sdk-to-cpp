@@ -24,6 +24,7 @@ def process(class_name : str):
         **JSONStructExtract.extract(class_name)
     })
 
+    file_name = class_name.replace("<", "_").replace(">", "_").removeprefix("C")
     for template, out_ext in (('source', 'cpp'), ('header', 'h')):
-        with (OUTPUT_PATH / f'{class_name}.{out_ext}').open('w', encoding='UTF-8') as file:
+        with (OUTPUT_PATH / f'{file_name}.{out_ext}').open('w', encoding='UTF-8') as file:
             file.write(j2env.get_template(f'{template}.jinja2').render())
