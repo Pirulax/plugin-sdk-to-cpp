@@ -1,6 +1,6 @@
 {%- from "print_if.jinja2" import print_if with context -%}
 
-{{- print_if("\npublic:\n", member_vars) -}}
-{%- for v in member_vars %}
+{{- print_if("\npublic:\n", mem_vars) -}}
+{%- for v in mem_vars %}
     {{ v.no_extent_type }} {{ v.stripped_name }}{% if v.array_subscript  %}{{ v.array_subscript }}{% endif %} = {}; // {{ v.address }}
 {% endfor -%}
