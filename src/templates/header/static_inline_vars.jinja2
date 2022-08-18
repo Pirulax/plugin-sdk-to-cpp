@@ -3,8 +3,8 @@
 {{ print_if("public:\n", static_vars) -}}
 {% for v in static_vars -%}
 {% if v.array_subscript -%} {# Array type #}
-    static inline {{ v.no_extent_type }} (&{{ v.stripped_name }}){{ v.array_subscript }} = *({{ v.no_extent_type }}(*){{ v.array_subscript }}){{ v.address }};
+    static inline {{ v.no_extent_type }} (&{{ v.namespaceless_name }}){{ v.array_subscript }} = *({{ v.no_extent_type }}(*){{ v.array_subscript }}){{ v.address }};
 {% else -%} {# Non-array type #}
-    static inline {{ v.no_extent_type }}& {{ v.stripped_name }} = *({{ v.no_extent_type }}*){{ v.address }};
+    static inline {{ v.no_extent_type }}& {{ v.namespaceless_name }} = *({{ v.no_extent_type }}*){{ v.address }};
 {% endif -%}
 {% endfor -%}

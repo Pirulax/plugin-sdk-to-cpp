@@ -9,6 +9,11 @@ import args
 from models.Variable import Variable
 from models.Function import Function, FunctionType
 
+BUILTIN_TYPES = {'bool', 'char', 'int', 'float', 'double', 'long', 'long long', 'short', 'unsigned char', 'unsigned int', 'unsigned long', 'unsigned long long', 'unsigned short', 'void'}
+
+def is_type_builtin(typ : str) -> bool:
+    return not typ.startswith("C") or typ in BUILTIN_TYPES
+
 class Class:
     def __init__(self, name : str, size : str, mem_vars : list[Variable], static_vars : list[Variable], fns : list[Function]):
         self.name = name
@@ -17,12 +22,20 @@ class Class:
         self.static_vars = static_vars
         self.functions = fns
         self.bases : list[str] = []
+        self.types_to_fwd_declare : set[str] = set()
+        self.types_to_include : set[str] = set()
 
         # Variables that begin with baseclass_ are considered base-classes
         for idx, var in enumerate(self.mem_vars):
-            if var.stripped_name.startswith("baseclass_"):
+            if var.namespaceless_name.startswith("baseclass_"):
                 self.bases.append(var.type)
+                if not is_type_builtin(var.type):
+                    self.types_to_include.add(var.type)
                 self.mem_vars.pop(idx)
+
+        for var in self.mem_vars:
+            if not is_type_builtin(var.type):
+                (self.types_to_fwd_declare if var.is_type_pointer else self.types_to_include).add(var.no_extent_type.replace('*', ''))
 
     def render_to_file(self):
         j2env = j2.Environment(
@@ -45,6 +58,8 @@ class Class:
             'bases': self.bases,
             'functions': self.functions,
             'mem_vars': self.mem_vars,
+            'types_to_fwd_declare': self.types_to_fwd_declare,
+            'types_to_include': self.types_to_include
         })
 
         file_name = self.name.replace("<", "_").replace(">", "_").removeprefix("C")

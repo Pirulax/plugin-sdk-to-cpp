@@ -3,8 +3,8 @@
 {{ print_if("public:\n", static_vars) -}}
 {%- for v in static_vars %}
 {%- if v.array_subscript -%} {# Array type #}
-    static {{ v.no_extent_type }} (&{{ v.stripped_name }}){{ v.array_subscript }};
+    static {{ v.no_extent_type }} (&{{ v.namespaceless_name }}){{ v.array_subscript }};
 {% else -%} {# Non-array type #}
-    static {{ v.no_extent_type }}& {{ v.stripped_name }};
+    static {{ v.no_extent_type }}& {{ v.namespaceless_name }};
 {% endif -%}
 {%- endfor -%}

@@ -3,9 +3,15 @@
 
 #pragma once
 
-{% for base in bases %}
-#include "{{ base | removeprefix('C') }}.h"
-{%- endfor %}
+{# Include base classes #}
+{% for type in types_to_include %}
+#include "{{ type | removeprefix('C') }}.h"
+{% endfor %}
+
+{# Forward declare pointer member variables #}
+{% for type in types_to_fwd_declare %}
+class {{ type }};
+{% endfor %}
 
 {# Macros #}
 {# Function declaration (Eg.: Function with no body) #}

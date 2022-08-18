@@ -38,7 +38,7 @@ def extract(class_name: str):
     return csv_df[['10us', 'Type', 'DemangledName']].apply(
         lambda s: Variable(
             address=s[0],
-            stripped_name=strip_name(s[2]),
+            namespaceless_name=strip_name(s[2]),
             full_name=s[2],
             type=normalize_type(s[1])
         ),
