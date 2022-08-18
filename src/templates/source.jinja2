@@ -1,5 +1,5 @@
 #include "StdInc.h"
-#include "{{ class_name }}.h"
+#include "{{ class_name | removeprefix('C') }}.h"
 
 {% from "print_if.jinja2" import print_if_array_not_empty with context -%}
 {% from "function_def.jinja2" import function_def_plugin with context -%}
@@ -12,29 +12,29 @@
 {% include "source/inject_hooks.jinja2" %}
 
 {# Constructors #}
-{% for fn in ctors -%}
+{% for fn in functions[FunctionType.CTOR] -%}
     {% include "source/constructror.jinja2" %}
 {% endfor %}
 
 {# Destructor if any #}
-{% if dtor %}
+{% if functions[FunctionType.DTOR] %}
     {% include "source/destructror.jinja2" %}
 {% endif %}
 
 {# Static functions #}
-{# {{ print_if_array_not_empty("// Static functions", static_fns) }} #}
-{% for fn in static_fns %}
+{# {{ print_if_array_not_empty("// Static functions", functions[FunctionType.STATIC]) }} #}
+{% for fn in functions[FunctionType.STATIC] %}
     {{- function_def_plugin(fn, fn.name) }}
 {% endfor %}
 
 {# Methods #}
-{# {{ print_if_array_not_empty("// Methods", methods) }} #}
-{% for fn in methods %}
+{# {{ print_if_array_not_empty("// Methods", functions[FunctionType.METHOD]) }} #}
+{% for fn in functions[FunctionType.METHOD] %}
     {{- function_def_plugin(fn, fn.name) }}
 {% endfor %}
 
-{# Virtual methods #}
-{# {{ print_if_array_not_empty("// Virtual methods", virtual_methods) }} #}
-{% for fn in virtual_methods -%}
+{# Virtual functions[FunctionType.METHOD] #}
+{# {{ print_if_array_not_empty("// Virtual functions[FunctionType.METHOD]", functions[FunctionType.VIRTUAL]) }} #}
+{% for fn in functions[FunctionType.VIRTUAL] -%}
     {{- function_def_plugin(fn, fn.name) }}
 {% endfor %}

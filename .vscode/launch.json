@@ -10,7 +10,7 @@
             "request": "launch",
             "program": "src/main.py",
             "console": "integratedTerminal",
-            "args": ["--db-path", "C:/Users/Public/reversing/gta_sa/database", "--class-name", "CTaskComplexSmartFleeEntity", "--assumed-cc", "--debug", "--use-static-inline"]
+            "args": ["--db-path", "C:/Users/Public/reversing/gta_sa/database", "--classes-to-process", "to_process.csv", "--assumed-cc", "--debug", "--use-static-inline"]
         }
     ]
 }

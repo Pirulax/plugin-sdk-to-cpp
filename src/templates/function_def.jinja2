@@ -2,7 +2,7 @@
 {# If `no_class_spec` is true the class_name:: prefix isn't added  #}
 {%- macro function_def(fn, name, no_class_spec=false, ret_type=fn.ret_type) -%}
 // {{ fn.address }}
-{# return type (may be none for ctor/dtor) #}
+{# return type (may be none for ctor/functions[FunctionType.DTOR]) #}
 {% if ret_type %}{{ ret_type }} {% endif -%}
 {# Class specifier prefix (eg.: class_name::) #}
 {%- if not no_class_spec -%}
@@ -12,7 +12,7 @@
     {% if caller -%}
         {{- caller() -}}
     {%- endif -%}
-}
+{{ "}" }}
 {% endmacro -%}
 
 {# Function with empty body #}

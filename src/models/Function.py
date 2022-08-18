@@ -7,10 +7,8 @@ import re
 from models.CallingConvention import CallingConvention
 import ArgsExtract
 from args import ASSUMED_CC
-import sys
 
 name_re = re.compile(r'(?:::|__)(~?\w+)')
-
 
 def extract_name_from_demangled(demangled_name : str):
     name = demangled_name.replace('__', '::')
@@ -35,6 +33,7 @@ class Function:
     arg_names : List[str] # Argument names
     type: FunctionType    # Type of the function   
     is_overloaded : bool  # Is this function overloaded 
+    is_hooked : bool      # Whenever the function should be hooked or not
 
     def __init__(self, class_name : str, address : str, demangled_name : str, cc : str, ret_type : str, arg_types : str, arg_names : str, vt_index : np.int16, is_overloaded : bool, **kwargs):
         self.cls = class_name
@@ -67,6 +66,9 @@ class Function:
             self.type = FunctionType.STATIC
         else:
             self.type = FunctionType.METHOD if self.vt_index == -1 else FunctionType.VIRTUAL
+
+        # CTORs and DTOR must be hooked
+        self.is_hooked = self.type in (FunctionType.CTOR, FunctionType.DTOR, FunctionType.DTOR_VIRTUAL)
 
     @property
     @cache

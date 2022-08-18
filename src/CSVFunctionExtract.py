@@ -1,7 +1,8 @@
 import re
+from typing import Sequence
 
 from pandas.core.frame import DataFrame
-from args import OUTPUT_PATH
+from args import OUTPUT_PATH, DEBUG_MODE
 
 import numpy as np
 from pandas import read_csv
@@ -80,10 +81,17 @@ def extract(class_name: str):
     # Is overloaded column
     csv_df['is_overloaded'] = csv_df['stripped_name'].duplicated(keep=False)
     
-    # Sort virtual methods. Important, otherwise 
+    # Sort virtual functions[FunctionType.METHOD]. Important, otherwise 
     # their VMT indices won't wont match up with GTAs
     csv_df.sort_values(inplace=True, by='vt_index')
     csv_df.reset_index(inplace=True)
+
+    if csv_df.empty:
+        print(f"No functions found for class {class_name}")
+        return
+
+    if DEBUG_MODE:
+        print(csv_df.to_string())
 
     if DUMP_PROTOTYPES:
         dump_prototypes(class_name, csv_df)
@@ -97,16 +105,17 @@ def extract(class_name: str):
     # TODO Maybe do some checks here (Eg.: Check for duplicate destructors)
 
     # Get all functions by type as a py list
-    get_all_by_type = lambda ts: fns[fns.apply(lambda f: f.type in ts)].tolist()
+    def get_all_by_type(types : Sequence[FunctionType]):
+        filtered_df = fns[fns.apply(lambda f: f.type in types)]
+        return filtered_df.tolist()
 
     fns_by_type = {
         # There can be only one destructor, so this has to be a single item, not a list
-        'dtor': first_of_list_or(get_all_by_type((FunctionType.DTOR, FunctionType.DTOR_VIRTUAL)), None), 
-        'ctors': get_all_by_type((FunctionType.CTOR, )),
-        'virtual_methods': get_all_by_type((FunctionType.VIRTUAL, )),
-        'methods': get_all_by_type((FunctionType.METHOD, )), 
-        'static_fns': get_all_by_type((FunctionType.STATIC, ))
+        FunctionType.DTOR:      first_of_list_or(get_all_by_type((FunctionType.DTOR, FunctionType.DTOR_VIRTUAL)), None), 
     }
+
+    for type in (FunctionType.CTOR, FunctionType.VIRTUAL, FunctionType.METHOD, FunctionType.STATIC):
+        fns_by_type[type] = get_all_by_type((type, ))
 
     if DEBUG_MODE:
         for k, v in fns_by_type.items():

@@ -1,6 +1,6 @@
 {% from "function_def.jinja2" import function_def with context %}
 
-    {% call function_def(dtor, 'Destructor', class_name + '*') %}
-    this->{{ class_name }}::~{{ class_name }}({{ dtor.param_names }});
+    {% call function_def(functions[FunctionType.DTOR], 'Destructor', class_name + '*') %}
+    this->{{ class_name }}::~{{ class_name }}({{ functions[FunctionType.DTOR].param_names }});
     return this;
     {% endcall %}

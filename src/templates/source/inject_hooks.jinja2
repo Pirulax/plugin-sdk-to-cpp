@@ -27,13 +27,17 @@
 {%- endif -%}
 {%- endmacro -%}
 
+{% set hook_disabled_locked = ", { .enabled = false, .locked = true }" %}
+{% set hook_enabled = "" %}
+
 {%- macro do_injects_for(list, name) -%}
 {%- if list and list|length -%}
 {% for fn in list %}
+    {% set additional_args = hook_enabled if fn.is_hooked else hook_disabled_locked %}
     {%- if fn.is_overloaded -%}
-        {{install_of(fn)}}({{real_function_name(fn)}}, "", {{fn.address}}, {{overloaded_cast_of(fn)}}, { .enabled = false, .locked = true });
+        {{install_of(fn)}}({{real_function_name(fn)}}, "", {{fn.address}}, {{overloaded_cast_of(fn)}}{{additional_args}}}});
     {% else -%}
-        {{install_of(fn)}}({{real_function_name(fn)}}, {{fn.address}}, { .enabled = false, .locked = true });
+        {{install_of(fn)}}({{real_function_name(fn)}}, {{fn.address}}{{additional_args}});
     {% endif -%}
 {% endfor %}
 
@@ -48,9 +52,9 @@ void {{ class_name }}::InjectHooks() {
     RH_ScopedCategory(); // TODO: Change this to the appropriate category!
     {% endif %}
 
-{{ do_injects_for(ctors, "Constructors") | indent(4) }}
-{{ do_injects_for([dtor] if dtor else [], "Destructors") | indent(4) }}
-{{ do_injects_for(static_fns, "Static functions") | indent(4) }}
-{{ do_injects_for(methods, "Methods") | indent(4) }}
-{{ do_injects_for(virtual_methods, "Virtual methods") | indent(4) }}
+{{ do_injects_for(functions[FunctionType.CTOR], "Constructors") | indent(4) }}
+{{ do_injects_for([functions[FunctionType.DTOR]] if functions[FunctionType.DTOR] else [], "Destructors") | indent(4) }}
+{{ do_injects_for(functions[FunctionType.STATIC], "Static functions") | indent(4) }}
+{{ do_injects_for(functions[FunctionType.METHOD], "Methods") | indent(4) }}
+{{ do_injects_for(functions[FunctionType.VIRTUAL], "Virtual functions[FunctionType.METHOD]") | indent(4) }}
 }

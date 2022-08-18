@@ -1,13 +1,19 @@
 {%- from "print_if.jinja2" import print_if with context -%}
 {% from "function_def.jinja2" import function_def with context -%}
 
+#pragma once
+
+{% for base in bases %}
+#include "{{ base | removeprefix('C') }}.h"
+{%- endfor %}
+
 {# Macros #}
 {# Function declaration (Eg.: Function with no body) #}
 {%- macro fn_decl(fn, name, ret_type=fn.ret_type) %}
 {% if ret_type %}{{ ret_type }} {% endif %}{{ name }}({{ fn.param_name_types }})
-{%- endmacro -%}
+{%- endmacro %}
 
-class {{ class_name }} {
+class {{ class_name }} : public {{ bases | join(", ") }} {
 {# Static variables #}
 {% if USE_STATIC_INLINE %} {# Declaration + Definition using `static inline` #}
     {%- include 'header/static_inline_vars.jinja2' %}
@@ -19,23 +25,22 @@ class {{ class_name }} {
 public:
     static void InjectHooks();
 
-{% if dtor %}
-    {{ fn_decl(dtor, '~' + class_name, none) }};
-{% endif -%}
-
-{%- for fn in ctors %}
+{% for fn in functions[FunctionType.CTOR] %}
     {{ fn_decl(fn, class_name, none) }};
 {% endfor %}
+{% if functions[FunctionType.DTOR] %}
+    {{ fn_decl(functions[FunctionType.DTOR], '~' + class_name, none) }};
+{% endif -%}
 
-{% for fn in static_fns %}
+{% for fn in functions[FunctionType.STATIC] %}
     static {{ fn_decl(fn, fn.name) }};
 {% endfor %}
 
-{% for fn in methods %}
+{% for fn in functions[FunctionType.METHOD] %}
     {{ fn_decl(fn, fn.name) }};
 {% endfor %}
 
-{% for fn in virtual_methods %}
+{% for fn in functions[FunctionType.VIRTUAL] %}
     virtual {{ fn_decl(fn, fn.name) }};
 {% endfor %}
 
@@ -46,12 +51,12 @@ private: // Wrappers for hooks
 
 {# Virtual method _Reversed wrappers (Which just redirect to this class's virtual function) #}
 {% if WRAP_VIRTUALS -%}
-{% for fn in virtual_methods %}
+{% for fn in functions[FunctionType.VIRTUAL] %}
     {{ fn.ret_type }} {{ fn.name + "_Reversed"}}({{ fn.param_name_types }}) { return {{ class_name }}::{{ fn.name }}({{ fn.param_names }}); }
 {% endfor -%}
 {% endif %}
 };{# End of class #}
 
-{% if class_size and class_size != '0x0' %}
-VALIDATE_SIZE({{ class_name }}, {{ class_size }});
+{% if class_size %}
+VALIDATE_SIZE({{ class_name }}, {{ class_size | int(class_size, 16) }});
 {% endif %}

@@ -1,3 +1,6 @@
 {% from "function_def.jinja2" import function_def -%}
-    {{ function_def(fn, class_name, false, none) }}
-    
+
+{%- call function_def(fn, class_name, false, none) %}
+    assert(false && "Constructor not reversed"); // TODO: Reverse constructor
+{%- endcall %}
+{{ "}" }}

@@ -16,7 +16,7 @@ Navigate into the downloaded repo, and launch `install.bat`
 `py src/main.py --db-path <Path to the database> --class-name <Class you want the code for> --pdtypes`
 
 Example command:
-`py src/main.py --db-path C:/Users/Public/reversing/gta_sa/database --assumed-cc --use-static-inline --class-name CBouncingPanel`
+`py src/main.py --db-path C:/Users/Public/reversing/gta_sa_izzotop_12_04_2022 --assumed-cc --use-static-inline --class-name CBouncingPanel`
 
 **Note: It is recommended you run clang-format. Go into the document in VS, and press CTRL+K + CTRL+D**
 

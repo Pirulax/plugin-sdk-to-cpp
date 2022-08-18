@@ -1,3 +1,6 @@
-    {% from "function_def.jinja2" import function_def with context -%}
-    {{- function_def(dtor, '~' + class_name, false, none) }}
-    
+{% from "function_def.jinja2" import function_def -%}
+
+{%- call function_def(functions[FunctionType.DTOR], '~' + class_name, false, none)  %}
+    assert(false && "Destructor not reversed"); // TODO: Reverse destructor
+{%- endcall %}
+{{ "}" }}
