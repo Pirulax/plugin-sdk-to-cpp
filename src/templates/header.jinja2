@@ -19,7 +19,10 @@ class {{ type }};
 {% if ret_type %}{{ ret_type }} {% endif %}{{ name }}({{ fn.param_name_types }})
 {%- endmacro %}
 
-class {{ class_name }} : public {{ bases | join(", ") }} {
+{% if PRINT_VMT_INFO and vtbl_addr %}
+// VMT: {{ '%#x' % vtbl_addr }} | Size: {{ vtbl_size }}
+{% endif %}
+class {{ "NOTSA_EXPORT_VTABLE" if vtbl_addr and PRINT_VMT_INFO else "" }} {{ class_name }} : public {{ bases | join(", ") }} {
 {# Static variables #}
 {% if USE_STATIC_INLINE %} {# Declaration + Definition using `static inline` #}
     {%- include 'header/static_inline_vars.jinja2' %}
@@ -47,7 +50,7 @@ public:
 {% endfor %}
 
 {% for fn in functions[FunctionType.VIRTUAL] %}
-    virtual {{ fn_decl(fn, fn.name) }};
+    virtual {{ fn_decl(fn, fn.name) }}; {% if PRINT_VMT_IDX %} // {{ fn.vt_index }} {{"\n"}} {% else %}} {{ "\n" }} {% endif %}
 {% endfor %}
 
 private: // Wrappers for hooks
@@ -61,6 +64,7 @@ private: // Wrappers for hooks
     {{ fn.ret_type }} {{ fn.name + "_Reversed"}}({{ fn.param_name_types }}) { return {{ class_name }}::{{ fn.name }}({{ fn.param_names }}); }
 {% endfor -%}
 {% endif %}
+
 };{# End of class #}
 
 {% if class_size %}

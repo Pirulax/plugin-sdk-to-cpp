@@ -73,7 +73,17 @@ parser.add_argument(
     '--wrap-virtuals',
     action='store_true',
     help='Add `_Reversed` wrappers for virtual functions.'
+)
+parser.add_argument(
+    '--print-vmt-idx',
+    action='store_true',
+    help='Print VMT index for virtual functions in the header'
 ) 
+parser.add_argument(
+    '--print-vmt-info',
+    action='store_true',
+    help='Whenever to print VMT (address and size) in the header'
+)
 # TODO
 # parser.add_argument(
 #     '--norwv3d',
@@ -116,5 +126,7 @@ DEBUG_MODE : bool = args.debug
 DUMP_PROTOTYPES : bool = args.dump_prot
 USE_STATIC_INLINE : bool = args.use_static_inline
 CATEGORY : str = args.category
+PRINT_VMT_IDX : bool = args.print_vmt_idx
+PRINT_VMT_INFO : bool = args.print_vmt_info
 
 OUTPUT_PATH.mkdir(parents=True, exist_ok=True)  # Make sure dir exists
