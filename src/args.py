@@ -1,6 +1,6 @@
 from argparse import ArgumentParser
 from pathlib import Path
-
+import os
 import pandas
 from models.CallingConvention import CallingConvention
 
@@ -108,18 +108,18 @@ args = parser.parse_args()
 if not args.class_name and not args.classes_to_process:
     raise ValueError('You must specify either --class-name or --classes-to-process')
 
-if not args.db_path.exists():
-    raise NotADirectoryError('Plugin SDK export path invalid (-i). Run the IDA plugin-sdk exporter plugin. (IDA: Edit -> Plugins)')
-
 if args.classes_to_process:
     with open(args.classes_to_process, 'r') as f:
         CLASSES_TO_PROCESS = pandas.read_csv(f)["class_name"].values
 else:
     CLASSES_TO_PROCESS = None
 
+fix_path = lambda p: Path(os.path.expandvars(os.path.expanduser(p)))
+
 WRAP_VIRTUALS : bool = args.wrap_virtuals
-DATABASE_PATH : Path = args.db_path
-OUTPUT_PATH : Path = args.output
+DATABASE_PATH : Path = fix_path(args.db_path)
+print(f"{DATABASE_PATH=!r}")
+OUTPUT_PATH : Path = fix_path(args.output)
 ARG_TYPES_FROM_DEMANGLED_NAME = True
 ASSUMED_CC : CallingConvention = args.assumed_cc
 DEBUG_MODE : bool = args.debug
@@ -128,5 +128,9 @@ USE_STATIC_INLINE : bool = args.use_static_inline
 CATEGORY : str = args.category
 PRINT_VMT_IDX : bool = args.print_vmt_idx
 PRINT_VMT_INFO : bool = args.print_vmt_info
+
+# Checking this here after it has been fixed
+if not DATABASE_PATH.exists():
+    raise NotADirectoryError('Plugin SDK export path invalid (-i). Run the IDA plugin-sdk exporter plugin. (IDA: Edit -> Plugins)')
 
 OUTPUT_PATH.mkdir(parents=True, exist_ok=True)  # Make sure dir exists
