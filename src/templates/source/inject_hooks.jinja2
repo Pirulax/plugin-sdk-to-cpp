@@ -21,13 +21,13 @@
 {%- if fn.is_static  -%}
     RH_ScopedGlobal{{overloaded_str}}Install
 {%- elif fn.is_virtual -%}
-    RH_Scoped{{overloaded_str}}VirtualInstall2
+    RH_Scoped{{overloaded_str}}VMTInstall
 {%- else -%}
     RH_Scoped{{overloaded_str}}Install
 {%- endif -%}
 {%- endmacro -%}
 
-{% set hook_disabled_locked = ", { .enabled = false, .locked = true }" %}
+{% set hook_disabled_locked = ", { .reversed = false }" %}
 {% set hook_enabled = "" %}
 
 {%- macro do_injects_for(list, name) -%}
@@ -45,9 +45,13 @@
 {%- endmacro -%}
 
 void {{ class_name }}::InjectHooks() {
-    RH_ScopedClass({{class_name}});
+    {% if vtbl_addr %}
+    RH_ScopedVirtualClass({{ class_name }}, {{ '%#x' % vtbl_addr }}, {{ vtbl_size }});
+    {% else %}
+    RH_ScopedClass({{ class_name }});
+    {% endif %}
     {% if CATEGORY %}
-    RH_ScopedCategory("{{CATEGORY}}");
+    RH_ScopedCategory("{{ CATEGORY }}");
     {% else %}
     RH_ScopedCategory(); // TODO: Change this to the appropriate category!
     {% endif %}
