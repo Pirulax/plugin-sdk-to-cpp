@@ -37,7 +37,7 @@
     {% set fn_name = real_function_name(fn) %}
     {% set addr = fn.address_hex %}
     {%- if fn.is_overloaded -%}
-        {{install_of(fn)}}({fn_name}}, "", {{addr}}, {{overloaded_cast_of(fn)}}{{additional_args}}}});
+        {{install_of(fn)}}({{fn_name}}, "", {{addr}}, {{overloaded_cast_of(fn)}}{{additional_args}});
     {% else -%}
         {{install_of(fn)}}({{fn_name}}, {{addr}}{{additional_args}});
     {% endif -%}

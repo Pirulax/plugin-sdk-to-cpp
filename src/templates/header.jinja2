@@ -22,7 +22,7 @@ class {{ type }};
 {% if PRINT_VMT_INFO and vtbl_addr %}
 // VMT: {{ '%#x' % vtbl_addr }} | Size: {{ vtbl_size }}
 {% endif %}
-class {{ "NOTSA_EXPORT_VTABLE" if vtbl_addr and PRINT_VMT_INFO else "" }} {{ class_name }} : public {{ bases | join(", ") }} {
+class {{ "NOTSA_EXPORT_VTABLE" if vtbl_addr else "" }} {{ class_name }} : public {{ bases | join(", ") }} {
 {# Static variables #}
 {% if USE_STATIC_INLINE %} {# Declaration + Definition using `static inline` #}
     {%- include 'header/static_inline_vars.jinja2' %}
