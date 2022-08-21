@@ -139,3 +139,19 @@ if not DATABASE_PATH.exists():
     raise NotADirectoryError('Plugin SDK export path invalid (-i). Run the IDA plugin-sdk exporter plugin. (IDA: Edit -> Plugins)')
 
 OUTPUT_PATH.mkdir(parents=True, exist_ok=True)  # Make sure dir exists
+
+print(f"""
+Using the following settings:
+    Database path: {DATABASE_PATH!r}
+    Output path: {OUTPUT_PATH!r}
+    Classes to process: {CLASSES_TO_PROCESS!r}
+    Class name: {args.class_name!r}
+    Category: {CATEGORY!r}
+    Debug mode: {DEBUG_MODE!r}
+    Dump prototypes: {DUMP_PROTOTYPES!r}
+    Use static inline: {USE_STATIC_INLINE!r}
+    Wrap virtuals: {WRAP_VIRTUALS!r}
+    Print VMT index: {PRINT_VMT_IDX!r}
+    Print VMT info: {PRINT_VMT_INFO!r}
+    Print mem var info: {PRINT_MEM_VAR_INFO!r}
+""")
