@@ -1,6 +1,6 @@
 {% from "function_def.jinja2" import function_def -%}
 
-{%- call function_def(functions[FunctionType.DTOR], '~' + class_name, false, none)  %}
+{%- call function_def(functions[FunctionType.DTOR][0], '~' + class_name, false, none)  %}
     assert(false && "Destructor not reversed"); // TODO: Reverse destructor
 {%- endcall %}
 {{ "}" }}

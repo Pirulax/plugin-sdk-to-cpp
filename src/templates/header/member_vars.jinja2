@@ -2,5 +2,6 @@
 
 {{- print_if("\npublic:\n", mem_vars) -}}
 {%- for v in mem_vars %}
-    {{ v.no_extent_type }} {{ v.namespaceless_name }}{% if v.array_subscript  %}{{ v.array_subscript }}{% endif %} = {}; // {{ v.address }}
+    {% set info = " // " + v.address_hex|string if PRINT_MEM_VAR_INFO else "" %}
+    {{ v.type.no_extent_type }} {{ v.namespaceless_name }}{{ v.type.array_subscript or "" }} = {}; {{ info }}
 {% endfor -%}

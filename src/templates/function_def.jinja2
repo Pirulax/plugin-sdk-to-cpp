@@ -1,7 +1,7 @@
 {# Function definition where caller specifies the body #}
 {# If `no_class_spec` is true the class_name:: prefix isn't added  #}
 {%- macro function_def(fn, name, no_class_spec=false, ret_type=fn.ret_type) -%}
-// {{ fn.address }}
+// {{ fn.address_hex }}
 {# return type (may be none for ctor/functions[FunctionType.DTOR]) #}
 {% if ret_type %}{{ ret_type }} {% endif -%}
 {# Class specifier prefix (eg.: class_name::) #}
@@ -17,11 +17,11 @@
 
 {# Function with empty body #}
 {% macro function_def_empty_body(fn, name, no_class_spec=false) -%}
-    {%- call function_def(fn, fn.name, no_class_spec) -%}{%- endcall -%}
+    {%- call function_def(fn, fn.namespaceless_name, no_class_spec) -%}{%- endcall -%}
 {%- endmacro -%}
 
 {# Function def for wrapper of functions that just redirect using `plugin::call` #}
-{%- macro function_def_plugin(fn, name, no_class_spec=false) -%}
+{%- macro function_def_plugin(fn, name=fn.namespaceless_name, no_class_spec=false) -%}
     {%- call function_def(fn, name, no_class_spec) %}
     {{ fn.plugin_call_src | indent(4) }};
     {% endcall -%}

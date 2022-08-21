@@ -5,7 +5,6 @@ import numpy as np
 from pandas import read_csv
 
 from models.Variable import Variable
-from type_replacement import normalize_type
 from args import DATABASE_PATH
 
 strip_name_re = re.compile(r'::(\w+)')
@@ -37,10 +36,10 @@ def extract(class_name: str):
     csv_df = csv_df.loc[lambda s: s['DemangledName'].str.startswith(class_name + '::')]
     return csv_df[['10us', 'Type', 'DemangledName']].apply(
         lambda s: Variable(
-            address=s[0],
+            address=int(s[0], 16),
             namespaceless_name=strip_name(s[2]),
             full_name=s[2],
-            type=normalize_type(s[1])
+            type=s[1]
         ),
         axis=1,
         result_type='reduce'

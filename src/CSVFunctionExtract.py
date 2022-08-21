@@ -40,7 +40,7 @@ def dump_prototypes(class_name : str, df : DataFrame):
         df.apply(to_file, axis=1)
 
 #  Returns a tuple of (Non-Virtual, and Virtual[Sorted by vmt index]) functions belonging to this class
-def extract(class_name: str):
+def extract(class_name: str) -> dict[FunctionType, Function]:
     csv_path = DATABASE_PATH / 'plugin-sdk.out.functions.csv'
     if not csv_path.exists():
         raise FileNotFoundError('plugin-sdk.out.functions.csv not present. Try re-running IDA plugin-sdk exporter.')
@@ -110,8 +110,8 @@ def extract(class_name: str):
         return filtered_df.tolist()
 
     fns_by_type = {
-        # There can be only one destructor, so this has to be a single item, not a list
-        FunctionType.DTOR:      first_of_list_or(get_all_by_type((FunctionType.DTOR, FunctionType.DTOR_VIRTUAL)), None), 
+        # There can be only one destructor, but for simplicity we're going to use a list anways
+        FunctionType.DTOR: get_all_by_type((FunctionType.DTOR, FunctionType.DTOR_VIRTUAL)), 
     }
 
     for type in (FunctionType.CTOR, FunctionType.VIRTUAL, FunctionType.METHOD, FunctionType.STATIC):

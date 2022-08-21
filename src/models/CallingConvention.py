@@ -11,10 +11,10 @@ class CallingConvention(Enum):
         self.plugin_fn = plugin_fn      # Respective plugin:: function with which this cc is called with
         self.is_special = is_special    # See `has_to_speficy`
 
-    THIS_CALL = 'thiscall', True, 'CallMethod', False
-    FAST_CALL = 'fastcall', True, 'FastCall', True
-    CDECL     = 'cdecl', False, 'Call', False
-    STDCALL   = 'stdcall', False, 'Call', True
+    THIS_CALL = ('thiscall', True,  'CallMethod', False)
+    FAST_CALL = ('fastcall', True,  'FastCall',   True)
+    CDECL     = ('cdecl',    False, 'Call',       False)
+    STDCALL   = ('stdcall',  False, 'Call',       True)
 
     @property
     def is_static(self):

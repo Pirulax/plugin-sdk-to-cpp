@@ -5,9 +5,9 @@
     {%- elif fn.is_dtor -%}
         Destructor
     {%- elif fn.is_virtual and WRAP_VIRTUALS -%}
-        {{ fn.name }}_Reversed
+        {{ fn.namespaceless_name }}_Reversed
     {%- else -%}
-        {{ fn.name }}
+        {{ fn.namespaceless_name }}
     {%- endif -%}
 {%- endmacro -%}
 
@@ -34,10 +34,12 @@
 {%- if list and list|length -%}
 {% for fn in list %}
     {% set additional_args = hook_enabled if fn.is_hooked else hook_disabled_locked %}
+    {% set fn_name = real_function_name(fn) %}
+    {% set addr = fn.address_hex %}
     {%- if fn.is_overloaded -%}
-        {{install_of(fn)}}({{real_function_name(fn)}}, "", {{fn.address}}, {{overloaded_cast_of(fn)}}{{additional_args}}}});
+        {{install_of(fn)}}({fn_name}}, "", {{addr}}, {{overloaded_cast_of(fn)}}{{additional_args}}}});
     {% else -%}
-        {{install_of(fn)}}({{real_function_name(fn)}}, {{fn.address}}{{additional_args}});
+        {{install_of(fn)}}({{fn_name}}, {{addr}}{{additional_args}});
     {% endif -%}
 {% endfor %}
 
@@ -57,7 +59,7 @@ void {{ class_name }}::InjectHooks() {
     {% endif %}
 
 {{ do_injects_for(functions[FunctionType.CTOR], "Constructors") | indent(4) }}
-{{ do_injects_for([functions[FunctionType.DTOR]] if functions[FunctionType.DTOR] else [], "Destructors") | indent(4) }}
+{{ do_injects_for(functions[FunctionType.DTOR], "Destructors") | indent(4) }}
 {{ do_injects_for(functions[FunctionType.STATIC], "Static functions") | indent(4) }}
 {{ do_injects_for(functions[FunctionType.METHOD], "Methods") | indent(4) }}
 {{ do_injects_for(functions[FunctionType.VIRTUAL], "Virtual functions[FunctionType.METHOD]") | indent(4) }}

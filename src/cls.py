@@ -1,3 +1,4 @@
+import itertools
 import json
 from pathlib import Path
 from args import OUTPUT_PATH
@@ -9,13 +10,8 @@ import args
 from models.Variable import Variable
 from models.Function import Function, FunctionType
 
-BUILTIN_TYPES = {'bool', 'char', 'int', 'float', 'double', 'long', 'long long', 'short', 'unsigned char', 'unsigned int', 'unsigned long', 'unsigned long long', 'unsigned short', 'void'}
-
-def is_type_builtin(typ : str) -> bool:
-    return not typ.startswith("C") or typ in BUILTIN_TYPES
-
 class Class:
-    def __init__(self, name : str, size : str, mem_vars : list[Variable], static_vars : list[Variable], fns : list[Function], vtbl_addr : int, vtbl_size : int):
+    def __init__(self, name : str, size : str, mem_vars : list[Variable], static_vars : list[Variable], fns : dict[FunctionType, list[Function]], vtbl_addr : int, vtbl_size : int):
         self.name = name
         self.size = size
         self.mem_vars = mem_vars
@@ -27,17 +23,28 @@ class Class:
         self.types_to_fwd_declare : set[str] = set()
         self.types_to_include : set[str] = set()
 
+        def iter_all_function_types():
+            for fns_by_type in fns.values():
+                for func in fns_by_type:
+                    yield func.ret_type
+                    yield from func.arg_types
+
+        unique_type_names = set(itertools.chain.from_iterable((
+            (v.type for v in mem_vars), 
+            (v.type for v in static_vars),
+            iter_all_function_types()
+        )))
+
+        for u_type in unique_type_names:
+            if not u_type.is_builtin:
+                (self.types_to_fwd_declare if u_type.is_pointer else self.types_to_include).add(u_type.decay_type)
+
         # Variables that begin with baseclass_ are considered base-classes
+        # So remove them for the member variables list, and add them to the bases list
         for idx, var in enumerate(self.mem_vars):
             if var.namespaceless_name.startswith("baseclass_"):
                 self.bases.append(var.type)
-                if not is_type_builtin(var.type):
-                    self.types_to_include.add(var.type)
                 self.mem_vars.pop(idx)
-
-        for var in self.mem_vars:
-            if not is_type_builtin(var.type):
-                (self.types_to_fwd_declare if var.is_type_pointer else self.types_to_include).add(var.no_extent_type.replace('*', ''))
 
     def render_to_file(self):
         j2env = j2.Environment(

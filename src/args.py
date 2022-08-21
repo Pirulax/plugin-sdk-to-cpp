@@ -84,6 +84,11 @@ parser.add_argument(
     action='store_true',
     help='Whenever to print VMT (address and size) in the header'
 )
+parser.add_argument(
+    '--print-mem-var-info',
+    action='store_true',
+    help='Print variable information in the header (Currently only the address is printed)'
+)
 # TODO
 # parser.add_argument(
 #     '--norwv3d',
@@ -118,7 +123,6 @@ fix_path = lambda p: Path(os.path.expandvars(os.path.expanduser(p)))
 
 WRAP_VIRTUALS : bool = args.wrap_virtuals
 DATABASE_PATH : Path = fix_path(args.db_path)
-print(f"{DATABASE_PATH=!r}")
 OUTPUT_PATH : Path = fix_path(args.output)
 ARG_TYPES_FROM_DEMANGLED_NAME = True
 ASSUMED_CC : CallingConvention = args.assumed_cc
@@ -128,6 +132,7 @@ USE_STATIC_INLINE : bool = args.use_static_inline
 CATEGORY : str = args.category
 PRINT_VMT_IDX : bool = args.print_vmt_idx
 PRINT_VMT_INFO : bool = args.print_vmt_info
+PRINT_MEM_VAR_INFO : bool = args.print_mem_var_info
 
 # Checking this here after it has been fixed
 if not DATABASE_PATH.exists():

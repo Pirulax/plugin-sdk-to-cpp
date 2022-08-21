@@ -24,17 +24,17 @@
 {# Static functions #}
 {# {{ print_if_array_not_empty("// Static functions", functions[FunctionType.STATIC]) }} #}
 {% for fn in functions[FunctionType.STATIC] %}
-    {{- function_def_plugin(fn, fn.name) }}
+    {{- function_def_plugin(fn) }}
 {% endfor %}
 
 {# Methods #}
 {# {{ print_if_array_not_empty("// Methods", functions[FunctionType.METHOD]) }} #}
 {% for fn in functions[FunctionType.METHOD] %}
-    {{- function_def_plugin(fn, fn.name) }}
+    {{- function_def_plugin(fn) }}
 {% endfor %}
 
 {# Virtual functions[FunctionType.METHOD] #}
 {# {{ print_if_array_not_empty("// Virtual functions[FunctionType.METHOD]", functions[FunctionType.VIRTUAL]) }} #}
 {% for fn in functions[FunctionType.VIRTUAL] -%}
-    {{- function_def_plugin(fn, fn.name) }}
+    {{- function_def_plugin(fn) }}
 {% endfor %}

@@ -15,7 +15,7 @@ class {{ type }};
 
 {# Macros #}
 {# Function declaration (Eg.: Function with no body) #}
-{%- macro fn_decl(fn, name, ret_type=fn.ret_type) %}
+{%- macro fn_decl(fn, name=fn.namespaceless_name, ret_type=fn.ret_type) %}
 {% if ret_type %}{{ ret_type }} {% endif %}{{ name }}({{ fn.param_name_types }})
 {%- endmacro %}
 
@@ -29,6 +29,7 @@ class {{ "NOTSA_EXPORT_VTABLE" if vtbl_addr and PRINT_VMT_INFO else "" }} {{ cla
 {%- else -%} {# Just declarations #}
     {%- include 'header/static_vars.jinja2' %}
 {%- endif -%}
+{# Member variables #}
 {% include 'header/member_vars.jinja2' %}
 
 public:
@@ -38,19 +39,19 @@ public:
     {{ fn_decl(fn, class_name, none) }};
 {% endfor %}
 {% if functions[FunctionType.DTOR] %}
-    {{ fn_decl(functions[FunctionType.DTOR], '~' + class_name, none) }};
+    {{ fn_decl(functions[FunctionType.DTOR][0], '~' + class_name, none) }};
 {% endif -%}
 
 {% for fn in functions[FunctionType.STATIC] %}
-    static {{ fn_decl(fn, fn.name) }};
+    static {{ fn_decl(fn) }};
 {% endfor %}
 
 {% for fn in functions[FunctionType.METHOD] %}
-    {{ fn_decl(fn, fn.name) }};
+    {{ fn_decl(fn) }};
 {% endfor %}
 
 {% for fn in functions[FunctionType.VIRTUAL] %}
-    virtual {{ fn_decl(fn, fn.name) }}; {% if PRINT_VMT_IDX %} // {{ fn.vt_index }} {{"\n"}} {% else %} {{ "\n" }} {% endif %}
+    virtual {{ fn_decl(fn) }}; {% if PRINT_VMT_IDX %} // {{ fn.vt_index }} {{"\n"}} {% else %} {{ "\n" }} {% endif %}
 {% endfor %}
 
 private: // Wrappers for hooks
