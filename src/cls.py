@@ -24,14 +24,15 @@ class Class:
         self.types_to_include : set[str] = set()
 
         def iter_all_function_types():
-            for fns_by_type in fns.values():
-                for func in fns_by_type:
-                    yield func.ret_type
-                    yield from func.arg_types
+            if fns is not None:
+                for fns_by_type in fns.values():
+                    for func in fns_by_type:
+                        yield func.ret_type
+                        yield from func.arg_types
 
         unique_type_names = set(itertools.chain.from_iterable((
-            (v.type for v in mem_vars), 
-            (v.type for v in static_vars),
+            (v.type for v in (mem_vars or [])),
+            (v.type for v in (static_vars or [])),
             iter_all_function_types()
         )))
 

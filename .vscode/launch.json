@@ -10,7 +10,7 @@
             "request": "launch",
             "program": "src/main.py",
             "console": "integratedTerminal",
-            "args": ["--db-path", "C:/Users/Public/reversing/gta_sa/database", "--assumed-cc", "--debug", "--use-static-inline", "--class-name", "CTaskSimpleCarOpenDoorFromOutside"]
+            "args": ["--db-path", "C:/Users/Public/reversing/gta_sa/database", "--assumed-cc", "--debug", "--use-static-inline", "--class-name", "CCarEnterExit"]
         }
     ]
 }
