@@ -6,7 +6,7 @@ from models import Type
 
 @dataclass
 class Variable:
-    address: int            # Address/Offset in hex format. Like 0xBADBEEF
+    address: int            # Address/Offset
     full_name: str          # Name with class, eg.: `CTimer::m_sTime``
     namespaceless_name: str # Name without class/namesapce. Eg.: `m_sTime`
     type: Type              # Full extent type, like int[10], int, int*, etc..
@@ -15,8 +15,8 @@ class Variable:
         if type:
             self.type = Type(type)
         else:
-            self.type = None
-            warnings.warn(f"Type of {self.full_name} not defined. Using `None` instead. To fix this, go to IDA, press Y on this variable, then enter, reexport, and you are gtg")
+            self.type = Type('void')
+            warnings.warn(f"Type of {full_name} not defined. Using `void` instead. To fix this, go to IDA, press Y on this variable, then enter, reexport, and you are gtg")
 
         self.address = address
         self.full_name = full_name
@@ -24,4 +24,10 @@ class Variable:
 
     @property
     def address_hex(self):
+        """Address but in hex format"""
         return f'0x{self.address:X}'
+    
+    @property
+    def definition_code(self):
+        """Get C++ definition code of this type"""
+        return f'auto& {self.namespaceless_name} = StaticRef<{self.type.definition_type}, {self.address_hex}>()'

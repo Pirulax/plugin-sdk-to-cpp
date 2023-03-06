@@ -1,10 +1,6 @@
 {%- from "print_if.jinja2" import print_if with context -%}
 
 {{ print_if("public:\n", static_vars) -}}
-{% for v in static_vars -%}
-{% if v.array_subscript -%} {# Array type #}
-    static inline {{ v.no_extent_type }} (&{{ v.namespaceless_name }}){{ v.array_subscript }} = *({{ v.no_extent_type }}(*){{ v.array_subscript }}){{ v.address }};
-{% else -%} {# Non-array type #}
-    static inline {{ v.no_extent_type }}& {{ v.namespaceless_name }} = *({{ v.no_extent_type }}*){{ v.address }};
-{% endif -%}
+{% for v in static_vars %}
+    static inline {{ v.definition_code }};
 {% endfor -%}

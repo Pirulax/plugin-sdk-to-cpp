@@ -78,11 +78,17 @@ def remove_all_extents(t : str):
 
     if subscript_match := SUBSCRIPT_REGEX.search(t):
         subscript = subscript_match.group(1)
-        return t.replace(subscript, '').strip(), subscript.strip()
-
+        if subscript != '[1]': # Sometimes there are 1-dimensional arrays with a size of 1, and that doesn't make sense :D
+            return t.replace(subscript, '').strip(), subscript.strip()
+            
     return t.strip(), None
 
-BUILTIN_TYPES    = {'bool', 'char', 'int', 'float', 'double', 'long', 'long long', 'short', 'unsigned char', 'unsigned int', 'unsigned long', 'unsigned long long', 'unsigned short', 'void'}
+BUILTIN_TYPES = {
+    'bool', 'char', 'int', 'float', 'double', 
+    'long', 'long long', 'short', 'unsigned char', 
+    'unsigned int', 'unsigned long', 'unsigned long long', 
+    'unsigned short', 'void'
+}
 
 # A regex to decay a C++ type emove all extents, references, const, volatile, etc.
 # NOTE: This regex is not 100% accurate, but it's good enough for our purposes
@@ -95,6 +101,9 @@ DECAY_TYPE_REGEX = re.compile(r'''
         |(?:(?:\s*&+)+) # references
     )
 ''', flags=re.VERBOSE)
+
+# Finds all array sizes from a string like [10][11] (Result would be: ['10', '11'])
+FIND_ALL_ARR_SZ_REGEX = re.compile(r'\[(\d+)\]')
 
 class Type:
     """
@@ -117,6 +126,17 @@ class Type:
     @cache
     def is_builtin(self):
         return not self.full_type.startswith("C") or self.full_type in BUILTIN_TYPES
+
+    @property
+    def definition_type(self):
+        """Type to use when defining. This isn't necessarily the same as self.full_type, but rather whatever is better fit in our case"""
+        if self.array_subscript:
+            # All array sizes (Eg.: ['10', '11'], etc)
+            arr_sz = re.findall(r'\[(\d+)\]', self.array_subscript)
+
+            # Now compose the array type -  Use std::array for single-dimensional arrays, and md_array for multi-dimensional ones
+            return f"{'std::array' if len(arr_sz) == 1 else 'notsa::mdarray' }<{self.no_extent_type}, {','.join(arr_sz)}>"
+        return self.full_type
 
     @property
     def decay_type(self):
